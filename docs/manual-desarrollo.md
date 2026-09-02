@@ -59,16 +59,22 @@ Se fija un stack único para poder reutilizar código entre estudios (multiplica
 | Capa | Elección | Motivo |
 |---|---|---|
 | Framework | **Next.js 14+ (App Router)** con **TypeScript** | Rutas dinámicas por área de práctica desde el CMS, SSG/ISR para velocidad, SEO nativo |
-| Estilos / UI | **Tailwind CSS** + **shadcn/ui** | Velocidad de armado, consistencia visual, sin licencias |
+| Estilos / UI | **Tailwind CSS** (componentes propios, ver nota) | Velocidad de armado, consistencia visual, sin licencias |
 | Contenido editable | **Sanity.io** (plan gratuito alcanza) | Da el "panel de autoadministración" sin construir un backend propio; Sanity Studio se despliega como panel embebido |
 | Formularios | **react-hook-form** + **zod** (validación) | Lógica condicional (mostrar WhatsApp solo tras completar área + resumen) |
 | Envío de formulario | Route handler de Next.js → **Resend** (email al estudio) + registro en Sanity como "lead" | Queda un registro de leads sin depender de planillas manuales |
 | WhatsApp | Deep link `https://wa.me/<numero>?text=<mensaje codificado>` generado con los datos del formulario | Cero costo, cero API, funciona siempre |
 | WhatsApp avanzado (upsell) | **WhatsApp Cloud API** + **n8n** (self-hosted o cloud) | Recordatorios de turnos/audiencias, respuestas automáticas a FAQ |
-| SEO | **next-seo** + JSON-LD manual (`LegalService`, `FAQPage`, `BreadcrumbList`) + **next-sitemap** | Rich snippets y sitemap automático |
+| SEO | Metadata API nativa de Next.js + JSON-LD manual (`LegalService`, `FAQPage`, `BreadcrumbList`) + `sitemap.ts`/`robots.ts` nativos | Rich snippets y sitemap automático, sin dependencias extra (ver nota) |
 | Analíticas | **GA4** + **Vercel Analytics** (eventos custom: `whatsapp_click`, `form_submit_por_area`) | Mostrar al cliente qué área genera más consultas |
 | Hosting / CI | **Vercel** (deploy automático por rama, preview por PR) | Cero DevOps, certificado SSL automático, CDN incluido |
 | Repositorio | **GitHub**, un repo template reutilizable + una carpeta de contenido por cliente | Permite clonar y personalizar en horas, no semanas |
+
+> **Nota de implementación (actualizado en el scaffolding inicial):**
+> - Se usó **Next.js 16** (la versión estable disponible al momento de crear el proyecto), no 14 — el App Router y las convenciones del manual son compatibles.
+> - **shadcn/ui no se pudo instalar**: su CLI (`npx shadcn init`) descarga la configuración desde `ui.shadcn.com`, host bloqueado por la política de red del entorno de desarrollo remoto usado para el scaffolding inicial. Se optó por componentes propios en Tailwind puro (botones, formulario, accordion de FAQ). Si se corre `npx shadcn@latest init` desde una máquina con acceso normal a internet, funciona sin cambios — es solo una limitación del entorno donde se hizo el scaffolding, no una decisión de producto.
+> - Se usa la **Metadata API nativa de Next.js** (`export const metadata`, `src/app/sitemap.ts`, `src/app/robots.ts`) en vez de `next-seo` y `next-sitemap`: son las herramientas idiomáticas del App Router y evitan dependencias redundantes.
+> - El **panel de Sanity Studio** vive embebido en `/studio` (`src/app/studio/[[...tool]]/page.tsx` + `sanity.config.ts` en la raíz) y requiere marcar la página como `"use client"` — sin eso, Turbopack falla al bundlear una dependencia interna de Sanity (`swr`) en el layer de Server Components.
 
 ---
 

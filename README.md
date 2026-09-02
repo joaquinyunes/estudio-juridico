@@ -6,10 +6,22 @@ El manual completo (propuesta comercial, stack técnico, fases del proyecto, gu�
 
 👉 [`docs/manual-desarrollo.md`](docs/manual-desarrollo.md)
 
+El estado actual del desarrollo (qué está hecho y qué falta) está en:
+
+👉 [`PROGRESS.md`](PROGRESS.md)
+
 ## Resumen rápido
 
 - **Stack:** Next.js (App Router) + TypeScript + Tailwind + shadcn/ui, CMS headless en Sanity.io, formularios con react-hook-form + zod, hosting en Vercel.
 - **Diferenciador central:** landing propia por especialidad (no una página de "servicios"), formulario calificador antes de mostrar WhatsApp, SEO técnico real (schema.org, Core Web Vitals), y panel de autoadministración para que el estudio edite contenido sin depender del desarrollador.
 - **Fases:** Descubrimiento → Contenido → Diseño → Desarrollo → QA → Lanzamiento → Handoff → Mantenimiento (recurrente, upsell).
+
+## Desarrollo local
+
+```bash
+npm install
+cp .env.local.example .env.local   # completar con las claves reales
+npm run dev
+```
 
 Ver el detalle completo, con checklists y comandos de arranque, en `docs/manual-desarrollo.md`.
