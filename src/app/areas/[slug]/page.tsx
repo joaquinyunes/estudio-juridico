@@ -68,7 +68,7 @@ export default async function AreaPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <h1 className="font-serif text-3xl font-semibold text-slate-900">
+      <h1 className="font-serif text-3xl font-semibold text-navy">
         {area.nombre}
       </h1>
       <p className="mt-4 text-lg text-slate-600">{area.descripcionLarga}</p>
@@ -76,7 +76,7 @@ export default async function AreaPage({
       <ul className="mt-8 space-y-2">
         {area.bullets.map((bullet) => (
           <li key={bullet} className="flex gap-2 text-slate-700">
-            <span aria-hidden className="text-emerald-700">
+            <span aria-hidden className="text-gold font-semibold">
               ✓
             </span>
             {bullet}
@@ -86,7 +86,7 @@ export default async function AreaPage({
 
       {testimoniosDelArea.length > 0 && (
         <section className="mt-12">
-          <h2 className="font-serif text-xl font-semibold text-slate-900 mb-4">
+          <h2 className="font-serif text-xl font-semibold text-navy mb-4">
             Casos resueltos
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -99,15 +99,15 @@ export default async function AreaPage({
 
       {area.faqs.length > 0 && (
         <section className="mt-12">
-          <h2 className="font-serif text-xl font-semibold text-slate-900 mb-4">
+          <h2 className="font-serif text-xl font-semibold text-navy mb-4">
             Preguntas frecuentes
           </h2>
           <FAQAccordion faqs={area.faqs} />
         </section>
       )}
 
-      <section className="mt-12 rounded-lg border border-slate-200 p-6">
-        <h2 className="font-serif text-xl font-semibold text-slate-900 mb-4">
+      <section className="mt-12 rounded-lg border border-slate-200 border-t-4 border-t-gold p-6">
+        <h2 className="font-serif text-xl font-semibold text-navy mb-4">
           Contanos tu caso
         </h2>
         <FormularioCalificador areaPreseleccionada={area.slug} />

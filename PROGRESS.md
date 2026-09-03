@@ -6,7 +6,7 @@ Referencia del plan completo: [`docs/manual-desarrollo.md`](docs/manual-desarrol
 
 ## Última actualización
 
-2026-09-02 — Sesión: scaffolding completo del template funcional (Fase 3 del manual, en curso).
+2026-09-03 — Sesión: aplicada la paleta "confianza" (navy + dorado) al diseño visual (Fase 3 del manual, en curso).
 
 ## Hecho
 
@@ -23,6 +23,7 @@ Referencia del plan completo: [`docs/manual-desarrollo.md`](docs/manual-desarrol
 - [x] `src/app/sitemap.ts` y `src/app/robots.ts` (nativos de Next, generan `/sitemap.xml` y `/robots.txt` reales).
 - [x] `.env.local.example` con todas las variables necesarias documentadas.
 - [x] Verificado localmente: `npm run build` compila sin errores (17 rutas generadas, incluidas las 5 landings por área), `npx eslint .` sin errores, y `npm run start` sirviendo Home + `/areas/laboral` + sitemap + robots con status 200 y JSON-LD presente.
+- [x] **Diseño visual — paleta "confianza" aplicada de verdad** (antes solo estaba definida como tokens sin usar): tokens `--color-navy`, `--color-navy-light`, `--color-gold`, `--color-gold-light` movidos a un bloque `@theme` en `globals.css` para que generen utilidades reales de Tailwind (`bg-navy`, `text-gold`, etc). Header y footer ahora en navy con hover/acentos dorados; hero de Home en navy con línea decorativa dorada y CTA primario dorado; cards de áreas con borde dorado al hover; checks de bullets, indicador +/− del FAQAccordion y borde izquierdo de TestimonioCard en dorado; botón y focus ring del FormularioCalificador en navy/dorado; headings de todas las páginas unificados a `text-navy`. El CTA de WhatsApp se dejó en verde (color de marca de WhatsApp) a propósito. Verificado con `npm run build` + `npm run start` + capturas de pantalla (Home y `/areas/laboral`).
 
 ## Qué falta por hacer (orden sugerido para la próxima sesión)
 
@@ -30,12 +31,11 @@ Referencia del plan completo: [`docs/manual-desarrollo.md`](docs/manual-desarrol
 2. **Conectar Sanity de verdad**: crear proyecto en sanity.io (`npx sanity login` + `npx sanity init` requieren sesión interactiva del usuario, no se puede automatizar sin credenciales), cargar `NEXT_PUBLIC_SANITY_PROJECT_ID` en `.env.local`, y migrar las páginas de leer `src/lib/content.ts` a hacer queries GROQ contra `src/lib/sanity.ts` (los esquemas y el cliente ya están armados, falta el "wiring" final).
 3. **Cargar contenido real del equipo** en `/equipo` (hoy es un placeholder explícito).
 4. **Analytics**: falta instrumentar GA4 real (hoy el código dispara `window.gtag(...)` si existe, pero no se inyectó el script de GA4 en `layout.tsx` — falta el `NEXT_PUBLIC_GA_ID` y el snippet).
-5. **Diseño visual**: el sitio hoy tiene la paleta "confianza" (navy + dorado) definida como tokens en `globals.css` pero casi no aplicada visualmente todavía (predomina slate/blanco). Falta pasar una revisión de diseño real sobre Home y las landings antes de mostrarlo a un cliente.
-6. **Imágenes**: no hay ninguna imagen real todavía (fotos del equipo, del estudio). Falta definir de dónde salen (stock con licencia, fotos reales del cliente) e integrarlas con `next/image`.
-7. **Google Business Profile / Search Console**: checklist de configuración pendiente (fuera del código, es un paso operativo de la Fase 5 del manual).
-8. **Deploy en Vercel**: pendiente conectar el repo a una cuenta de Vercel del usuario (no se puede automatizar sin acceso a esa cuenta).
-9. **WhatsApp Cloud API / n8n (upsell avanzado)**: no se empezó — es explícitamente fuera del paquete base de USD 1000 (ver manual §7), solo se implementa si un cliente lo paga aparte.
-10. **Portal de seguimiento de expediente**: no se empezó — proyecto aparte según el manual, no forma parte de este template.
+5. **Imágenes**: no hay ninguna imagen real todavía (fotos del equipo, del estudio). Falta definir de dónde salen (stock con licencia, fotos reales del cliente) e integrarlas con `next/image`.
+6. **Google Business Profile / Search Console**: checklist de configuración pendiente (fuera del código, es un paso operativo de la Fase 5 del manual).
+7. **Deploy en Vercel**: pendiente conectar el repo a una cuenta de Vercel del usuario (no se puede automatizar sin acceso a esa cuenta).
+8. **WhatsApp Cloud API / n8n (upsell avanzado)**: no se empezó — es explícitamente fuera del paquete base de USD 1000 (ver manual §7), solo se implementa si un cliente lo paga aparte.
+9. **Portal de seguimiento de expediente**: no se empezó — proyecto aparte según el manual, no forma parte de este template.
 
 ## Decisiones pendientes que necesitan al usuario (no asumir)
 

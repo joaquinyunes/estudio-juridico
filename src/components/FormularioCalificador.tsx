@@ -99,7 +99,7 @@ export function FormularioCalificador({ areaPreseleccionada }: Props) {
         <input
           id="nombre"
           {...register("nombre")}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold"
         />
         {errors.nombre && (
           <p className="text-sm text-red-600 mt-1">{errors.nombre.message}</p>
@@ -113,7 +113,7 @@ export function FormularioCalificador({ areaPreseleccionada }: Props) {
         <select
           id="area"
           {...register("area")}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold"
         >
           <option value="">Elegí un área</option>
           {areasDePractica.map((area) => (
@@ -135,7 +135,7 @@ export function FormularioCalificador({ areaPreseleccionada }: Props) {
           id="resumen"
           rows={4}
           {...register("resumen")}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold"
         />
         {errors.resumen && (
           <p className="text-sm text-red-600 mt-1">{errors.resumen.message}</p>
@@ -147,7 +147,7 @@ export function FormularioCalificador({ areaPreseleccionada }: Props) {
       <button
         type="submit"
         disabled={enviando}
-        className="inline-flex items-center justify-center rounded-md bg-slate-900 px-6 py-3 text-white font-medium hover:bg-slate-800 transition-colors disabled:opacity-50"
+        className="inline-flex items-center justify-center rounded-md bg-navy px-6 py-3 text-white font-medium hover:bg-navy-light transition-colors disabled:opacity-50"
       >
         {enviando ? "Enviando..." : "Continuar"}
       </button>

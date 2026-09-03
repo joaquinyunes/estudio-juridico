@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function TestimoniosPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-16">
-      <h1 className="font-serif text-3xl font-semibold text-slate-900">
+      <h1 className="font-serif text-3xl font-semibold text-navy">
         Casos resueltos
       </h1>
       <p className="mt-4 text-slate-600 max-w-2xl">

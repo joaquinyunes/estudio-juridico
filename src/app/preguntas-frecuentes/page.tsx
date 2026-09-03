@@ -20,7 +20,7 @@ export default function PreguntasFrecuentesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      <h1 className="font-serif text-3xl font-semibold text-slate-900">
+      <h1 className="font-serif text-3xl font-semibold text-navy">
         Preguntas frecuentes
       </h1>
       <p className="mt-4 text-slate-600">
@@ -33,7 +33,7 @@ export default function PreguntasFrecuentesPage() {
           <Link
             key={area.slug}
             href={`/areas/${area.slug}`}
-            className="text-sm rounded-full border border-slate-300 px-3 py-1 hover:border-slate-500"
+            className="text-sm rounded-full border border-slate-300 px-3 py-1 hover:border-gold hover:text-navy"
           >
             {area.nombre}
           </Link>

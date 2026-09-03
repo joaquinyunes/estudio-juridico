@@ -19,7 +19,7 @@ export function FAQAccordion({ faqs }: { faqs: Faq[] }) {
               className="w-full text-left py-4 flex items-center justify-between gap-4 font-medium"
             >
               <span>{faq.pregunta}</span>
-              <span aria-hidden className="text-slate-400">
+              <span aria-hidden className="text-gold font-semibold">
                 {estaAbierta ? "−" : "+"}
               </span>
             </button>
