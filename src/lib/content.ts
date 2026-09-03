@@ -25,6 +25,14 @@ export type AreaDePractica = {
   faqs: Faq[];
 };
 
+export type MiembroDelEquipo = {
+  nombre: string;
+  cargo: string;
+  matricula: string;
+  especialidades: string[];
+  bio: string;
+};
+
 export const datosDelEstudio = {
   nombre: "Estudio Jurídico Demo",
   telefonoWhatsapp: "5491100000000",
@@ -179,6 +187,30 @@ export const testimonios: Testimonio[] = [
     texto:
       "Resolvieron un conflicto societario que llevaba meses estancado, con un acuerdo que evitó un juicio largo.",
     areaSlug: "comercial",
+  },
+];
+
+export const equipo: MiembroDelEquipo[] = [
+  {
+    nombre: "Dra. Ana Ferreyra",
+    cargo: "Socia fundadora",
+    matricula: "Matrícula profesional Nº 00000 (placeholder)",
+    especialidades: ["Derecho Laboral", "Derecho Comercial"],
+    bio: "Más de 15 años asesorando a trabajadores y pequeñas empresas en conflictos laborales y comerciales.",
+  },
+  {
+    nombre: "Dr. Martín Suárez",
+    cargo: "Socio",
+    matricula: "Matrícula profesional Nº 00000 (placeholder)",
+    especialidades: ["Derecho de Familia", "Sucesiones"],
+    bio: "Especializado en divorcios, régimen de comunicación y trámites sucesorios, con foco en resolver por acuerdo cuando es posible.",
+  },
+  {
+    nombre: "Dra. Lucía Paredes",
+    cargo: "Asociada",
+    matricula: "Matrícula profesional Nº 00000 (placeholder)",
+    especialidades: ["Derecho Penal"],
+    bio: "Defensa penal y asesoramiento urgente ante denuncias, con disponibilidad prioritaria para causas con detención.",
   },
 ];
 
