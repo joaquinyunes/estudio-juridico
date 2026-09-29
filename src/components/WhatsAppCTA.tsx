@@ -1,32 +1,25 @@
 "use client";
 
+import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { trackEvent } from "@/lib/analytics";
+
 type Props = {
   mensaje: string;
   children: React.ReactNode;
   className?: string;
+  origen?: string;
 };
 
-export function WhatsAppCTA({ mensaje, children, className }: Props) {
-  const numero = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5491100000000").replace(
-    /\D/g,
-    ""
-  );
-  const href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
+export function WhatsAppCTA({ mensaje, children, className, origen }: Props) {
   return (
     <a
-      href={href}
+      href={buildWhatsAppLink(mensaje)}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => {
-        if (typeof window !== "undefined" && "gtag" in window) {
-          // @ts-expect-error gtag inyectado por el script de GA4
-          window.gtag("event", "whatsapp_click");
-        }
-      }}
+      onClick={() => trackEvent("whatsapp_click", { origen })}
       className={
         className ??
-        "inline-flex items-center justify-center rounded-md bg-emerald-700 px-6 py-3 text-white font-medium hover:bg-emerald-800 transition-colors"
+        "inline-flex items-center justify-center gap-2 rounded-full border border-tinta px-6 py-3 font-medium transition-colors hover:bg-tinta hover:text-papel"
       }
     >
       {children}

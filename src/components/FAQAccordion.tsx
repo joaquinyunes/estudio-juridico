@@ -1,34 +1,29 @@
-"use client";
-
-import { useState } from "react";
 import type { Faq } from "@/lib/content";
 
-export function FAQAccordion({ faqs }: { faqs: Faq[] }) {
-  const [abierta, setAbierta] = useState<number | null>(0);
-
+/**
+ * Preguntas frecuentes con <details>/<summary> nativos: accesibles, sin
+ * JavaScript y con el contenido indexable por buscadores.
+ */
+export function FAQAccordion({ faqs, abrirPrimera = true }: { faqs: Faq[]; abrirPrimera?: boolean }) {
   return (
-    <div className="divide-y divide-slate-200 border-t border-b border-slate-200">
-      {faqs.map((faq, index) => {
-        const estaAbierta = abierta === index;
-        return (
-          <div key={faq.pregunta}>
-            <button
-              type="button"
-              onClick={() => setAbierta(estaAbierta ? null : index)}
-              aria-expanded={estaAbierta}
-              className="w-full text-left py-4 flex items-center justify-between gap-4 font-medium"
-            >
-              <span>{faq.pregunta}</span>
-              <span aria-hidden className="text-slate-400">
-                {estaAbierta ? "−" : "+"}
-              </span>
-            </button>
-            {estaAbierta && (
-              <p className="pb-4 text-slate-600">{faq.respuesta}</p>
-            )}
-          </div>
-        );
-      })}
+    <div className="border-t border-tinta">
+      {faqs.map((faq, index) => (
+        <details
+          key={faq.pregunta}
+          open={abrirPrimera && index === 0}
+          className="group border-b border-linea"
+        >
+          <summary className="flex cursor-pointer list-none items-start gap-5 py-6 [&::-webkit-details-marker]:hidden">
+            <span className="rotulo pt-2 text-lacre">{String(index + 1).padStart(2, "0")}</span>
+            <span className="flex-1 font-display text-xl leading-snug md:text-2xl">{faq.pregunta}</span>
+            <span
+              aria-hidden
+              className="relative mt-2 h-4 w-4 shrink-0 before:absolute before:top-1/2 before:left-0 before:h-px before:w-4 before:bg-tinta after:absolute after:top-0 after:left-1/2 after:h-4 after:w-px after:bg-tinta after:transition-transform after:duration-300 group-open:after:scale-y-0"
+            />
+          </summary>
+          <p className="max-w-2xl pb-7 pl-10 leading-relaxed text-tinta-2">{faq.respuesta}</p>
+        </details>
+      ))}
     </div>
   );
 }

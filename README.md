@@ -10,9 +10,16 @@ El estado actual del desarrollo (qué está hecho y qué falta) está en:
 
 👉 [`PROGRESS.md`](PROGRESS.md)
 
+## Documentación
+
+- [`docs/analisis-competencia.md`](docs/analisis-competencia.md) — relevamiento de competencia y posicionamiento.
+- [`docs/sistema-de-diseno.md`](docs/sistema-de-diseno.md) — sistema visual "Folio" (tokens, tipografía, componentes).
+- [`docs/creditos-imagenes.md`](docs/creditos-imagenes.md) — origen y licencia de las fotos.
+
 ## Resumen rápido
 
-- **Stack:** Next.js (App Router) + TypeScript + Tailwind + shadcn/ui, CMS headless en Sanity.io, formularios con react-hook-form + zod, hosting en Vercel.
+- **Stack:** Next.js 16 (App Router) + TypeScript + Tailwind 4, CMS headless en Sanity.io (con contenido de respaldo local), formularios con react-hook-form (validación en servidor con zod), hosting en Vercel.
+- **Demo:** estudio ficticio "Iturbe & Lavalle" con contenido, equipo, historia, casos y notas completos, más una calculadora de indemnización actualizada a la Ley 27.802.
 - **Diferenciador central:** landing propia por especialidad (no una página de "servicios"), formulario calificador antes de mostrar WhatsApp, SEO técnico real (schema.org, Core Web Vitals), y panel de autoadministración para que el estudio edite contenido sin depender del desarrollador.
 - **Fases:** Descubrimiento → Contenido → Diseño → Desarrollo → QA → Lanzamiento → Handoff → Mantenimiento (recurrente, upsell).
 

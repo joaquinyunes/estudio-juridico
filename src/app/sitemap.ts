@@ -1,25 +1,37 @@
 import type { MetadataRoute } from "next";
-import { areasDePractica } from "@/lib/content";
+import { getAreas, getNotas } from "@/lib/cms";
+import { SITE_URL } from "@/lib/schema-org";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [areas, notas] = await Promise.all([getAreas(), getNotas()]);
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = [
-    "",
-    "/equipo",
-    "/testimonios",
-    "/preguntas-frecuentes",
-    "/contacto",
-    "/legales/aviso-legal",
-  ].map((path) => ({
-    url: `${SITE_URL}${path}`,
-    lastModified: new Date(),
-  }));
+  const estaticas: [string, number][] = [
+    ["", 1],
+    ["/calculadora-indemnizacion", 0.9],
+    ["/contacto", 0.9],
+    ["/equipo", 0.7],
+    ["/testimonios", 0.7],
+    ["/preguntas-frecuentes", 0.7],
+    ["/notas", 0.6],
+    ["/legales/aviso-legal", 0.2],
+    ["/legales/privacidad", 0.2],
+  ];
 
-  const areaRoutes = areasDePractica.map((area) => ({
-    url: `${SITE_URL}/areas/${area.slug}`,
-    lastModified: new Date(),
-  }));
-
-  return [...staticRoutes, ...areaRoutes];
+  return [
+    ...estaticas.map(([path, priority]) => ({
+      url: `${SITE_URL}${path}`,
+      lastModified: new Date(),
+      priority,
+    })),
+    ...areas.map((area) => ({
+      url: `${SITE_URL}/areas/${area.slug}`,
+      lastModified: new Date(),
+      priority: 0.9,
+    })),
+    ...notas.map((nota) => ({
+      url: `${SITE_URL}/notas/${nota.slug}`,
+      lastModified: new Date(nota.fecha),
+      priority: 0.5,
+    })),
+  ];
 }
