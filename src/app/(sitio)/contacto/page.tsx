@@ -69,7 +69,7 @@ export default async function ContactoPage({ searchParams }: PageProps<"/contact
             <WhatsAppCTA
               mensaje="URGENTE — Necesito asistencia penal ahora."
               origen="contacto-guardia"
-              className="mt-4 inline-flex items-center gap-2 font-medium text-lacre underline underline-offset-4"
+              className="mt-2 inline-flex min-h-11 items-center gap-2 font-medium text-lacre underline underline-offset-4"
             >
               Escribir a la guardia 24 h →
             </WhatsAppCTA>
@@ -92,9 +92,9 @@ export default async function ContactoPage({ searchParams }: PageProps<"/contact
           href={`https://www.google.com/maps/search/?api=1&query=${direccionMapa}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="enlace rotulo mt-4 inline-block"
+          className="rotulo mt-2 inline-flex min-h-11 items-center"
         >
-          Cómo llegar →
+          <span className="enlace">Cómo llegar →</span>
         </a>
       </section>
     </div>

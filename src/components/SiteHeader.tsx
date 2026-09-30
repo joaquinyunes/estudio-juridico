@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Monograma } from "./Sello";
+import { InstalarApp } from "./InstalarApp";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 const NAV = [
@@ -150,7 +151,7 @@ export function SiteHeader({ nombre, direccion, horarios, telefonoWhatsapp }: Pr
         <div
           id="menu-movil"
           hidden={!abierto}
-          className="h-[calc(100dvh-4.5rem)] overflow-y-auto border-t border-linea bg-papel px-6 pb-10 lg:hidden"
+          className="h-[calc(100dvh-4.5rem)] overflow-y-auto overscroll-contain border-t border-linea bg-papel px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] lg:hidden"
         >
           <nav aria-label="Menú móvil">
             <ol className="divide-y divide-linea">
@@ -180,6 +181,7 @@ export function SiteHeader({ nombre, direccion, horarios, telefonoWhatsapp }: Pr
               Guardia penal 24 h →
             </a>
           </div>
+          <InstalarApp className="mt-8" />
         </div>
       </header>
     </>

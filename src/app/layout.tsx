@@ -4,6 +4,7 @@ import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { getDatosDelEstudio } from "@/lib/cms";
 import { SITE_URL } from "@/lib/schema-org";
+import { RegistrarServiceWorker } from "@/components/RegistrarServiceWorker";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -37,6 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: descripcion,
     },
     twitter: { card: "summary_large_image" },
+    appleWebApp: { capable: true, title: datos.nombre, statusBarStyle: "default" },
     formatDetection: { telephone: false },
   };
 }
@@ -45,6 +47,8 @@ export const viewport: Viewport = {
   themeColor: "#f3ede2",
   width: "device-width",
   initialScale: 1,
+  // Ocupa toda la pantalla en iPhone con notch; las zonas seguras se respetan con env(safe-area-inset-*).
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -55,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-dvh flex-col">
         {children}
+        <RegistrarServiceWorker />
         {process.env.VERCEL && <Analytics />}
         {GA_ID && (
           <>

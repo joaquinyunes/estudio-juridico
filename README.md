@@ -23,6 +23,10 @@ El estado actual del desarrollo (qué está hecho y qué falta) está en:
 - **Diferenciador central:** landing propia por especialidad (no una página de "servicios"), formulario calificador antes de mostrar WhatsApp, SEO técnico real (schema.org, Core Web Vitals), y panel de autoadministración para que el estudio edite contenido sin depender del desarrollador.
 - **Fases:** Descubrimiento → Contenido → Diseño → Desarrollo → QA → Lanzamiento → Handoff → Mantenimiento (recurrente, upsell).
 
+## En el celular
+
+El sitio es una PWA: se puede instalar como app desde el navegador (Android: aviso "Instalar"; iPhone: Compartir → Agregar a inicio), abre a pantalla completa y funciona sin conexión para las páginas ya visitadas y la calculadora. El service worker (`public/sw.js`) solo se activa en producción (`npm run build && npm run start`).
+
 ## Desarrollo local
 
 ```bash

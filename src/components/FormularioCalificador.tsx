@@ -139,7 +139,7 @@ export function FormularioCalificador({ areas, areaPreseleccionada, tono = "clar
             return (
               <label
                 key={area.slug}
-                className={`cursor-pointer rounded-full border px-4 py-2 text-sm transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-lacre ${
+                className={`flex min-h-11 cursor-pointer items-center rounded-full border px-4 py-2 text-sm transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-lacre ${
                   elegida
                     ? "border-lacre bg-lacre text-papel"
                     : oscuro
@@ -160,7 +160,7 @@ export function FormularioCalificador({ areas, areaPreseleccionada, tono = "clar
         <legend className={`rotulo ${tenue}`}>2 · ¿Qué tan urgente es?</legend>
         <div className="mt-3 space-y-1">
           {URGENCIAS.map((u) => (
-            <label key={u.valor} className="flex cursor-pointer items-center gap-3 py-1.5">
+            <label key={u.valor} className="flex min-h-11 cursor-pointer items-center gap-3 py-2">
               <input
                 type="radio"
                 value={u.valor}
@@ -181,6 +181,8 @@ export function FormularioCalificador({ areas, areaPreseleccionada, tono = "clar
         <input
           id="nombre"
           autoComplete="name"
+          autoCapitalize="words"
+          enterKeyHint="next"
           placeholder="Nombre y apellido"
           aria-invalid={!!errors.nombre}
           className={campoBase}

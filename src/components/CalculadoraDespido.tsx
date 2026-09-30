@@ -78,6 +78,7 @@ export function CalculadoraDespido({ oscura = true }: { oscura?: boolean }) {
               <input
                 id={`${id}-sueldo`}
                 inputMode="numeric"
+                enterKeyHint="done"
                 autoComplete="off"
                 placeholder="1.800.000"
                 value={sueldo ? sueldo.toLocaleString("es-AR") : ""}

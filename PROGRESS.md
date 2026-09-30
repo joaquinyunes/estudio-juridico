@@ -6,9 +6,21 @@ Referencia del plan completo: [`docs/manual-desarrollo.md`](docs/manual-desarrol
 
 ## Última actualización
 
-2026-09-29 — Sesión: rediseño completo nivel premium ("Folio"), contenido de demo completo, calculadora de indemnización, Sanity conectado con respaldo local, auditoría Lighthouse.
+2026-09-30 — Sesión: app instalable en celulares (PWA), modo sin conexión y pulido táctil.
+
+2026-09-29 — Sesión anterior: rediseño completo nivel premium ("Folio"), contenido de demo completo, calculadora de indemnización, Sanity conectado con respaldo local, auditoría Lighthouse.
 
 ## Hecho
+
+### Sesión 2026-09-30 — celulares y app instalable
+
+- [x] **PWA instalable**: `src/app/manifest.ts` (nombre, colores, íconos normales y "maskable", accesos directos a Consulta y Calculadora), `apple-icon.png` y metadatos `appleWebApp` para iPhone. Chrome no reporta errores de instalabilidad.
+- [x] **Funciona sin conexión**: `public/sw.js` (páginas primero por red con respaldo en caché, estáticos primero por caché, imágenes con actualización en segundo plano). Precarga `/`, `/calculadora-indemnizacion` y `/offline`. La calculadora calcula offline; una página no guardada muestra `/offline` con botón para llamar. Se registra solo en producción y cuando el navegador está ocioso. **Para forzar actualización en los teléfonos, subir `VERSION` en `sw.js`.**
+- [x] **Botón "Instalar la app"** (`InstalarApp`) dentro del menú mobile: aviso nativo en Android/Chrome; en iPhone muestra los pasos "Compartir → Agregar a inicio"; se oculta si ya está instalada.
+- [x] **Pulido táctil**: `viewport-fit=cover` + zonas seguras (`env(safe-area-inset-*)`) en la barra inferior, el menú y los laterales; sin demora de toque ni resaltado gris; respuesta visual al presionar; objetivos táctiles ≥ 44 px en formulario y contacto; teclado con `enterKeyHint`/`inputMode` adecuados.
+- [x] **Barra inferior** con botón de llamada (evento `llamada_click`).
+- [x] **Corregido** desborde horizontal de la home en teléfonos de 320–360 px (fechas de notas).
+- [x] **Verificado** con Playwright en producción: instalable, service worker activo, modo offline, sin desborde horizontal en 11 páginas a 320/360/390/414 px. Lighthouse sin cambios fuera del margen de ruido (accesibilidad, buenas prácticas y SEO en 100).
 
 ### Sesión 2026-09-29 — rediseño premium
 
@@ -40,7 +52,7 @@ Referencia del plan completo: [`docs/manual-desarrollo.md`](docs/manual-desarrol
 2. **Sanity**: crear el proyecto (`npx sanity login` + `npx sanity init` requieren sesión interactiva), completar `NEXT_PUBLIC_SANITY_PROJECT_ID` y `SANITY_API_TOKEN` (con permiso de escritura para guardar leads) y cargar el contenido. Las páginas ya leen del panel.
 3. **Resend**: verificar dominio, completar `RESEND_API_KEY`, `RESEND_FROM` y `LEADS_EMAIL`.
 4. **Variables**: `NEXT_PUBLIC_WHATSAPP_NUMBER`, `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_SITE_URL` con los valores reales.
-5. **Deploy en Vercel** bajo la cuenta que se defina y conectar dominio.
+5. **Deploy en Vercel** bajo la cuenta que se defina y conectar dominio. La instalación como app requiere HTTPS (Vercel lo da automáticamente); probar "Agregar a inicio" en un Android y un iPhone reales.
 6. **Performance de la home**: si se exige ≥ 90 también en la home, las palancas que quedan son cargar el formulario de contacto de forma diferida y reducir la cantidad de secciones o imágenes de la home.
 7. **Revisión legal** de aviso legal y política de privacidad por el estudio antes de publicar.
 8. Google Business Profile / Search Console (paso operativo, Fase 5 del manual).

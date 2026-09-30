@@ -30,6 +30,18 @@
     scroll-behavior: smooth;
     scroll-padding-top: 6rem;
     -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Celulares: sin demora al tocar y respetando el notch en horizontal. */
+  a,
+  button,
+  summary,
+  label,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
   }
 
   body {
@@ -38,6 +50,17 @@
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
     text-rendering: optimizeLegibility;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Respuesta visual al presionar en pantallas táctiles (no hay hover). */
+  @media (hover: none) {
+    a.rounded-full:active,
+    button.rounded-full:active,
+    label.rounded-full:active {
+      transform: scale(0.97);
+    }
   }
 
   /* Grano de papel: textura muy sutil sobre todo el sitio. */

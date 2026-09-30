@@ -21,8 +21,8 @@ export default async function SitioLayout({ children }: LayoutProps<"/">) {
         {children}
       </main>
       <SiteFooter datos={datos} areas={areas} />
-      <div aria-hidden className="h-[4.75rem] bg-noche sm:hidden" />
-      <BarraMovil />
+      <div aria-hidden className="h-[calc(4.5rem+env(safe-area-inset-bottom))] bg-noche sm:hidden" />
+      <BarraMovil telefono={datos.telefono} />
     </>
   );
 }

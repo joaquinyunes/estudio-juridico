@@ -9,6 +9,22 @@ export const formatoFecha = new Intl.DateTimeFormat("es-AR", {
   timeZone: "UTC",
 });
 
+const fechaCorta = new Intl.DateTimeFormat("es-AR", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+/** "20 nov 2025": para columnas angostas en celulares. */
+function formatoCorto(fecha: Date) {
+  return fechaCorta
+    .formatToParts(fecha)
+    .filter((p) => p.type !== "literal")
+    .map((p) => p.value.replace(".", ""))
+    .join(" ");
+}
+
 type Props = {
   nota: Nota;
   variante?: "destacada" | "normal" | "horizontal";
@@ -38,8 +54,8 @@ export function TarjetaNota({ nota, variante = "normal" }: Props) {
       <div className={horizontal ? "flex flex-col" : ""}>
         <p className={`rotulo flex flex-wrap gap-x-3 gap-y-1.5 text-tinta-3 ${horizontal ? "" : "mt-5"}`}>
           <span className="text-lacre">{nota.categoria}</span>
-          <time dateTime={nota.fecha} className="whitespace-nowrap">
-            {formatoFecha.format(new Date(nota.fecha))}
+          <time dateTime={nota.fecha} className={horizontal ? "" : "whitespace-nowrap"}>
+            {horizontal ? formatoCorto(new Date(nota.fecha)) : formatoFecha.format(new Date(nota.fecha))}
           </time>
           <span className="whitespace-nowrap">{nota.lectura}</span>
         </p>
