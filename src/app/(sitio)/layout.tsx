@@ -2,15 +2,18 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BarraMovil } from "@/components/BarraMovil";
 import { JsonLd } from "@/components/JsonLd";
-import { getAreas, getDatosDelEstudio } from "@/lib/cms";
+import { getAreas, getAviso, getDatosDelEstudio } from "@/lib/cms";
+import { AvisoDelSitio } from "@/components/AvisoDelSitio";
 import { buildOrganizationJsonLd } from "@/lib/schema-org";
 
 export default async function SitioLayout({ children }: LayoutProps<"/">) {
-  const [datos, areas] = await Promise.all([getDatosDelEstudio(), getAreas()]);
+  const [datos, areas, aviso] = await Promise.all([getDatosDelEstudio(), getAreas(), getAviso()]);
 
   return (
     <>
       <JsonLd data={buildOrganizationJsonLd(datos, areas)} />
+      <div aria-hidden className="progreso" />
+      {aviso && <AvisoDelSitio aviso={aviso} />}
       <SiteHeader
         nombre={datos.nombre}
         direccion={datos.direccion}

@@ -120,16 +120,20 @@ export default async function AreaPage({ params }: { params: Promise<Params> }) 
             </div>
           </div>
           <div className="lg:col-span-5">
-            <div className="arco relative aspect-[4/5] bg-papel-3">
-              <Image
-                src={area.imagen}
-                alt={area.imagenAlt}
-                fill
-                loading="eager"
-                fetchPriority="high"
-                sizes="(min-width: 1024px) 38vw, 100vw"
-                className="foto object-cover"
-              />
+            <div className="marco marco-arco">
+              <div className="arco brillo abrir relative aspect-[4/5] bg-papel-3">
+                <div className="paralaje">
+                  <Image
+                    src={area.imagen}
+                    alt={area.imagenAlt}
+                    fill
+                    loading="eager"
+                    fetchPriority="high"
+                    sizes="(min-width: 1024px) 38vw, 100vw"
+                    className="foto foto-vivo kenburns object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -155,7 +159,7 @@ export default async function AreaPage({ params }: { params: Promise<Params> }) 
       </section>
 
       {area.slug === "laboral" && (
-        <section id="calculadora" aria-labelledby="t-calc" className="bg-noche py-20 text-papel md:py-28">
+        <section id="calculadora" aria-labelledby="t-calc" className="noche-vivo bg-noche py-20 text-papel md:py-28">
           <div className="mx-auto max-w-[88rem] px-6">
             <p className="rotulo text-lacre-claro">§ 02 — Calculadora</p>
             <h2 id="t-calc" className="display mt-4 mb-14 text-[clamp(2.4rem,5vw,4.5rem)]">
@@ -223,7 +227,7 @@ export default async function AreaPage({ params }: { params: Promise<Params> }) 
         </section>
       )}
 
-      <section id="consulta" aria-labelledby="t-consulta" className="bg-noche py-20 text-papel md:py-28">
+      <section id="consulta" aria-labelledby="t-consulta" className="noche-vivo bg-noche py-20 text-papel md:py-28">
         <div className="mx-auto grid max-w-[88rem] gap-14 px-6 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <p className="rotulo text-lacre-claro">Consulta sin costo</p>

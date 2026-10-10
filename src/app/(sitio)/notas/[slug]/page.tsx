@@ -70,16 +70,20 @@ export default async function NotaPage({ params }: { params: Promise<Params> }) 
       </header>
 
       <div className="mx-auto mt-12 max-w-6xl px-6">
-        <div className="relative aspect-[21/10] overflow-hidden bg-papel-3">
-          <Image
-            src={nota.imagen}
-            alt={nota.imagenAlt}
-            fill
-            loading="eager"
-            fetchPriority="high"
-            sizes="(min-width: 1152px) 1152px, 100vw"
-            className="foto object-cover"
-          />
+        <div className="esquinas">
+          <div className="brillo relative aspect-[21/10] bg-papel-3">
+            <div className="paralaje">
+              <Image
+                src={nota.imagen}
+                alt={nota.imagenAlt}
+                fill
+                loading="eager"
+                fetchPriority="high"
+                sizes="(min-width: 1152px) 1152px, 100vw"
+                className="foto foto-vivo kenburns object-cover"
+              />
+            </div>
+          </div>
         </div>
       </div>
 

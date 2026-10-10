@@ -159,8 +159,91 @@
       filter 0.8s var(--ease-folio),
       transform 1.2s var(--ease-folio);
   }
-  .group:hover .foto-vivo {
+  :is(.group, .brillo):hover .foto-vivo {
     filter: grayscale(0.2) sepia(0.1) contrast(1.02);
+  }
+  .brillo:hover .foto-zoom {
+    transform: scale(1.05);
+  }
+
+  /* Destello diagonal que cruza la foto al pasar el mouse. */
+  .brillo {
+    position: relative;
+    overflow: hidden;
+  }
+  .brillo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 38%,
+      rgb(255 248 230 / 0.38) 50%,
+      transparent 62%
+    );
+    transform: translateX(-130%);
+  }
+  .brillo:hover::after {
+    transform: translateX(130%);
+    transition: transform 1.1s var(--ease-folio);
+  }
+
+  /* Marco desplazado detrás de la foto (solo ≥ 768 px, para no desbordar). */
+  .marco {
+    position: relative;
+  }
+  @media (min-width: 768px) {
+    .marco::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--color-lacre);
+      transform: translate(14px, 14px);
+      transition: transform 0.8s var(--ease-folio);
+      pointer-events: none;
+    }
+    .marco-arco::before {
+      border-top-left-radius: 999px;
+      border-top-right-radius: 999px;
+    }
+    .marco:hover::before {
+      transform: translate(5px, 5px);
+    }
+  }
+
+  /* Marcas de registro en las cuatro esquinas, como un pliego de imprenta. */
+  .esquinas {
+    position: relative;
+  }
+  .esquinas::before {
+    --c: var(--color-lacre);
+    content: "";
+    position: absolute;
+    inset: -9px;
+    z-index: 3;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--c), var(--c)) left top / 20px 1px,
+      linear-gradient(var(--c), var(--c)) left top / 1px 20px,
+      linear-gradient(var(--c), var(--c)) right top / 20px 1px,
+      linear-gradient(var(--c), var(--c)) right top / 1px 20px,
+      linear-gradient(var(--c), var(--c)) left bottom / 20px 1px,
+      linear-gradient(var(--c), var(--c)) left bottom / 1px 20px,
+      linear-gradient(var(--c), var(--c)) right bottom / 20px 1px,
+      linear-gradient(var(--c), var(--c)) right bottom / 1px 20px;
+    background-repeat: no-repeat;
+    transition: inset 0.6s var(--ease-folio);
+  }
+  .esquinas:hover::before {
+    inset: -3px;
+  }
+
+  /* Capa interna que se desplaza distinto al scroll (parallax). */
+  .paralaje {
+    position: absolute;
+    inset: -9% 0;
   }
 
   /* Capitular para párrafos de apertura. */
@@ -303,13 +386,296 @@
   animation: subir 1.1s var(--ease-folio) both;
 }
 
+/* ——— Efectos nuevos ——— */
+
+@keyframes abrir {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes kenburns {
+  from {
+    transform: scale(1.14);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes paralaje {
+  from {
+    transform: translateY(-7%);
+  }
+  to {
+    transform: translateY(7%);
+  }
+}
+
+@keyframes flotar {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(4deg);
+  }
+}
+
+@keyframes deriva {
+  to {
+    transform: translate3d(7%, -5%, 0) scale(1.12);
+  }
+}
+
+@keyframes trazar {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes subrayar {
+  to {
+    background-size: 100% 0.05em;
+  }
+}
+
+@keyframes sellar {
+  from {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes progreso {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes colorear {
+  from {
+    filter: grayscale(1) sepia(0.18) contrast(1.06) brightness(0.98);
+  }
+  to {
+    filter: grayscale(0.15) sepia(0.1) contrast(1.02);
+  }
+}
+
+@keyframes marquesina-inversa {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Barra de progreso de lectura en el borde superior. */
+.progreso {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 70;
+  height: 3px;
+  background: var(--color-lacre);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+/* Cinta de áreas: se detiene al pasar el mouse y se desvanece en los bordes. */
+.marquesina-mascara {
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.marquesina-mascara:hover .marquesina,
+.marquesina-mascara:hover .marquesina-inversa {
+  animation-play-state: paused;
+}
+.marquesina-inversa {
+  animation: marquesina-inversa 60s linear infinite;
+}
+
+/* Fondos oscuros con un resplandor de lacre que deriva lentamente. */
+.noche-vivo {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+.noche-vivo::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 34% at 18% 24%, rgb(140 42 28 / 0.38), transparent 70%),
+    radial-gradient(34% 30% at 86% 78%, rgb(224 135 111 / 0.14), transparent 70%);
+}
+
+/* Botones: se elevan al pasar el mouse. Fuera de @layer para ganarle a Tailwind. */
+a.rounded-full,
+button.rounded-full {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 0.45s;
+  transition-timing-function: var(--ease-folio);
+}
+@media (hover: hover) {
+  a.rounded-full.bg-tinta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px -14px rgb(140 42 28 / 0.65);
+  }
+  a.rounded-full.border:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -16px rgb(23 21 15 / 0.5);
+  }
+}
+
+/* Preguntas frecuentes: la respuesta se despliega con suavidad. */
+@supports selector(::details-content) {
+  details.faq {
+    interpolate-size: allow-keywords;
+  }
+  details.faq::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.5s var(--ease-folio),
+      content-visibility 0.5s allow-discrete;
+  }
+  details.faq[open]::details-content {
+    block-size: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .abrir {
+    animation: abrir 1.5s var(--ease-folio) 0.1s backwards;
+  }
+  .kenburns {
+    animation: kenburns 24s ease-out both;
+  }
+  .flotar {
+    animation: flotar 7s ease-in-out infinite;
+  }
+  .noche-vivo::before {
+    animation: deriva 30s ease-in-out infinite alternate;
+  }
+  .trazar {
+    transform-origin: 0 50%;
+    animation: trazar 1.6s var(--ease-folio) 0.35s backwards;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .paralaje {
+      animation: paralaje linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    /* Escalonado: cada elemento usa --i para entrar un poco después. */
+    .escalon {
+      animation-range: entry calc(var(--i, 0) * 9%) entry calc(55% + var(--i, 0) * 9%);
+    }
+
+    /* Subrayado de lacre que se dibuja bajo la palabra enfatizada. */
+    .display em {
+      --sub: var(--color-lacre);
+      background-image: linear-gradient(var(--sub), var(--sub));
+      background-repeat: no-repeat;
+      background-position: 0 94%;
+      background-size: 0% 0.05em;
+      animation: subrayar linear both;
+      animation-timeline: view();
+      animation-range: entry 35% cover 38%;
+    }
+    .bg-noche .display em {
+      --sub: var(--color-lacre-claro);
+    }
+
+    .sellar {
+      /* Crece hacia la izquierda: anclado al borde derecho no desborda la página. */
+      transform-origin: right center;
+      animation: sellar linear both;
+      animation-timeline: view();
+      animation-range: entry 45% cover 32%;
+    }
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .progreso {
+      animation: progreso linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+/* Celulares no tienen hover: la foto recupera el color al llegar al centro. */
+@supports (animation-timeline: view()) {
+  @media (hover: none) and (prefers-reduced-motion: no-preference) {
+    .foto-vivo {
+      animation: colorear linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 50%;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .girar,
   .marquesina,
+  .marquesina-inversa,
   .linea-titular > span {
     animation: none !important;
   }
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* Cinta de aviso: baja al cargar y una franja de luz la recorre. */
+.aviso::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 40%, rgb(255 248 230 / 0.16) 50%, transparent 60%);
+  transform: translateX(-100%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .aviso {
+    animation: aviso-entrada 0.9s var(--ease-folio) both;
+  }
+  .aviso::after {
+    animation: aviso-brillo 6s ease-in-out 1.2s infinite;
+  }
+}
+@keyframes aviso-entrada {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+@keyframes aviso-brillo {
+  0%,
+  60% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }

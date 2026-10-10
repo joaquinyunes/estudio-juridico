@@ -39,7 +39,7 @@ export function TarjetaNota({ nota, variante = "normal" }: Props) {
       className={`group relative ${horizontal ? "grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-6" : "flex flex-col"}`}
     >
       <div
-        className={`relative overflow-hidden bg-papel-3 ${
+        className={`brillo relative bg-papel-3 ${
           destacada ? "aspect-[4/3]" : horizontal ? "aspect-[4/5] sm:aspect-[4/3]" : "aspect-[3/2]"
         }`}
       >
@@ -48,7 +48,7 @@ export function TarjetaNota({ nota, variante = "normal" }: Props) {
           alt={nota.imagenAlt}
           fill
           sizes={destacada ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 20vw, 40vw"}
-          className="foto object-cover group-hover:scale-105"
+          className="foto foto-vivo foto-zoom object-cover"
         />
       </div>
       <div className={horizontal ? "flex flex-col" : ""}>

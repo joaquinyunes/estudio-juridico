@@ -72,11 +72,14 @@ async function guardarEnSanity(lead: {
 }): Promise<boolean> {
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
   const token = process.env.SANITY_API_TOKEN;
-  if (!projectId || !token) return false;
+  // Los datos personales NUNCA van al dataset del contenido (es público: lo lee
+  // el sitio). Solo se guardan si hay un dataset privado dedicado a consultas.
+  const dataset = process.env.SANITY_LEADS_DATASET;
+  if (!projectId || !token || !dataset) return false;
 
   const client = createClient({
     projectId,
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
+    dataset,
     apiVersion: "2024-01-01",
     token,
     useCdn: false,

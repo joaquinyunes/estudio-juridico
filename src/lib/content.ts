@@ -94,7 +94,20 @@ export const datosDelEstudio = {
   modoDemo: true,
 };
 
-export const cifras = [
+export type Cifra = { valor: string; unidad: string; texto: string };
+
+/**
+ * Aviso de demostración (solo se usa sin Sanity configurado, para mostrar la
+ * función a quien evalúa el sitio). Con el panel conectado manda el panel.
+ */
+export const avisoDemo = {
+  etiqueta: "Novedad",
+  texto: "Nueva nota: qué cambió en las indemnizaciones por despido con la reforma laboral.",
+  enlace: "/notas/reforma-laboral-2026-que-cambia-si-te-despiden",
+  enlaceTexto: "Leer la nota",
+};
+
+export const cifras: Cifra[] = [
   { valor: "39", unidad: "años", texto: "ejerciendo frente a Tribunales" },
   { valor: "4.200", unidad: "+", texto: "casos acompañados desde 1987" },
   { valor: "48", unidad: "h", texto: "para responder si tu caso es viable" },

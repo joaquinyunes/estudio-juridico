@@ -15,7 +15,7 @@ export function CabeceraPagina({ rotulo, titulo, bajada, children }: Props) {
         <p className="mt-8 max-w-2xl text-lg leading-relaxed text-tinta-2 md:text-xl">{bajada}</p>
       )}
       {children}
-      <div aria-hidden className="filete-doble mt-14 text-tinta" />
+      <div aria-hidden className="filete-doble trazar mt-14 text-tinta" />
     </header>
   );
 }

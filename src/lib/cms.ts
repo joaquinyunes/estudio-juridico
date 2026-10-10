@@ -4,6 +4,8 @@ import * as local from "./content";
 import type {
   Abogado,
   AreaDePractica,
+  Cifra,
+  Faq,
   Nota,
   Testimonio,
 } from "./content";
@@ -100,7 +102,7 @@ export async function getNota(slug: string): Promise<Nota | undefined> {
 
 export async function getDatosDelEstudio(): Promise<typeof local.datosDelEstudio> {
   const remoto = await fetchOr<Partial<typeof local.datosDelEstudio> | null>(
-    `*[_type == "datosDelEstudio"][0]{nombre, horarios, direccion, telefono, telefonoWhatsapp, email}`,
+    `*[_type == "datosDelEstudio"][0]{nombre, horarios, guardia, direccion, referencia, telefono, telefonoWhatsapp, email}`,
     null,
   );
   // Los campos vacíos del panel no pisan los valores de respaldo.
@@ -108,4 +110,62 @@ export async function getDatosDelEstudio(): Promise<typeof local.datosDelEstudio
     Object.entries(remoto ?? {}).filter(([, v]) => v != null && v !== ""),
   );
   return { ...local.datosDelEstudio, ...definidos };
+}
+
+/** Cifras de la portada: del panel si hay al menos una; si no, las de respaldo. */
+export async function getCifras(): Promise<Cifra[]> {
+  const remotas = await fetchOr<Cifra[] | null>(
+    `*[_type == "datosDelEstudio"][0].cifras[]{valor, "unidad": coalesce(unidad, ""), texto}`,
+    null,
+  );
+  return remotas && remotas.length > 0 ? remotas : local.cifras;
+}
+
+export function getFaqsGenerales(): Promise<Faq[]> {
+  return fetchOr(
+    `*[_type == "faqGeneral"] | order(orden asc) {pregunta, respuesta}`,
+    local.faqsGenerales,
+  );
+}
+
+export type Aviso = {
+  etiqueta: string;
+  texto: string;
+  enlace?: string;
+  enlaceTexto?: string;
+};
+
+/** Fecha de hoy en Buenos Aires como AAAA-MM-DD, para comparar con `desde`/`hasta`. */
+function hoyEnBuenosAires(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Argentina/Buenos_Aires" }).format(new Date());
+}
+
+/**
+ * Aviso del sitio. Con el panel conectado, "sin aviso" significa que no hay
+ * ninguno vigente (no se cae al aviso de demostración de `content.ts`).
+ */
+export async function getAviso(): Promise<Aviso | null> {
+  if (!sanityClient) return local.avisoDemo;
+  try {
+    const a = await sanityClient.fetch<
+      (Aviso & { activo?: boolean; desde?: string; hasta?: string }) | null
+    >(
+      `*[_type == "aviso"][0]{activo, etiqueta, texto, enlace, enlaceTexto, desde, hasta}`,
+      {},
+      { next: { revalidate: REVALIDATE_SECONDS } },
+    );
+    if (!a || a.activo === false || !a.texto) return null;
+    const hoy = hoyEnBuenosAires();
+    if (a.desde && hoy < a.desde) return null;
+    if (a.hasta && hoy > a.hasta) return null;
+    return {
+      etiqueta: a.etiqueta || "Novedad",
+      texto: a.texto,
+      enlace: a.enlace || undefined,
+      enlaceTexto: a.enlaceTexto || "Ver más",
+    };
+  } catch (err) {
+    console.error("Sanity no respondió; no se muestra aviso", err);
+    return null;
+  }
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { faqsGenerales } from "@/lib/content";
-import { getAreas } from "@/lib/cms";
+import { getAreas, getFaqsGenerales } from "@/lib/cms";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { CabeceraPagina } from "@/components/CabeceraPagina";
 import { JsonLd } from "@/components/JsonLd";
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PreguntasFrecuentesPage() {
-  const areas = await getAreas();
+  const [areas, faqsGenerales] = await Promise.all([getAreas(), getFaqsGenerales()]);
   const todas = [...faqsGenerales, ...areas.flatMap((a) => a.faqs)];
 
   return (

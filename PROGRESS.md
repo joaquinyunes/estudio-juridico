@@ -6,6 +6,27 @@ Referencia del plan completo: [`docs/manual-desarrollo.md`](docs/manual-desarrol
 
 ## Última actualización
 
+2026-10-10 (2) — Sesión: acceso al panel restringido + deploy.
+- **Candado del panel**: `src/proxy.ts` exige usuario y contraseña (Basic Auth, `ADMIN_USER`/`ADMIN_PASSWORD`) en `/studio/*` antes de servir el Studio; comparación en tiempo constante, bloqueo tras 8 fallos en 15 min, `noindex`, `no-store`. **Sin `ADMIN_PASSWORD` el panel responde 404 en producción** (falla cerrado). Segunda barrera: login de Sanity (solo invitados).
+- Verificado contra `next start`: 401 sin credenciales / clave incorrecta / usuario incorrecto; 200 con las correctas; 429 tras 10 fallos; el sitio público y `/api/lead` no se ven afectados.
+- **Privacidad**: las consultas ya no se guardan en el dataset de contenido (es público). Solo se guardan si existe `SANITY_LEADS_DATASET` (dataset privado); si no, llegan por email (Resend). Se sacó "Consultas recibidas" del menú del panel.
+- **Hosting**: Render, servicio `estudio-juridico` (rama `rediseno-premium`, deploy automático por commit) → https://estudio-juridico-cnik.onrender.com. **Hay que cargar `ADMIN_USER` y `ADMIN_PASSWORD` en Render → Environment** (la contraseña local está en `repo/.env.local`, que no se versiona).
+- Conocido: en `npm run dev` (Turbopack) abrir `/studio` rompe el servidor de desarrollo por un paquete de Sanity (`@sanity/workbench`, "Unknown module type"). `npm run build` y producción no se ven afectados. Para trabajar el panel localmente usar `npm run build && npm start`.
+
+2026-10-10 — Sesión: panel de administración ampliado (Sanity Studio en `/studio`), pensado para lo que el estudio cambia mes a mes.
+- Nuevo **Aviso del sitio** (`sanity/schemas/aviso.ts`, componente `AvisoDelSitio`): cinta superior con etiqueta, texto, enlace y fechas desde/hasta; se oculta sola al vencer. Con el panel conectado, "sin aviso" = no se muestra nada; el aviso de demostración (`avisoDemo` en `content.ts`) solo aparece sin Sanity.
+- **Cifras de la portada**, **guardia** y **referencia** ahora editables (`datosDelEstudio`), y **preguntas frecuentes generales** como documentos (`faqGeneral`). `cms.ts`: `getAviso`, `getCifras`, `getFaqsGenerales`.
+- Menú del panel en español y ordenado por uso; Aviso y Datos son documentos únicos (`sanity.config.ts`).
+- Guía para el estudio: `docs/guia-del-panel.md`.
+- Corregido: el sello "Resuelto" de los testimonios creaba scroll horizontal en escritorio (nacía agrandado fuera de la tarjeta).
+- **Pendiente para que funcione en producción**: crear el proyecto de Sanity (ver "Qué falta" punto 2) e invitar a los usuarios del estudio desde sanity.io/manage. Sin proyecto, el sitio sigue usando `content.ts`.
+
+2026-10-05 — Sesión: efectos y animaciones (CSS puro, respetan `prefers-reduced-motion`).
+- Fotos: `.brillo` (destello al hover), `.marco`/`.marco-arco` (marco de lacre desplazado, solo ≥768 px), `.esquinas` (marcas de registro), `.paralaje` + `.kenburns` (hero, obelisco, áreas, notas), `.abrir` (el arco se abre al cargar). `.foto-vivo` recupera color con hover; en celulares (sin hover) lo hace al hacer scroll.
+- Global: barra de progreso de lectura (`.progreso`), subrayado de lacre que se dibuja bajo las palabras en cursiva de los títulos, botones que se elevan, FAQ con apertura suave, fondos oscuros con resplandor (`.noche-vivo`), sello flotante, filete que se traza en cabeceras.
+- Componentes: `Contador` (cifras que cuentan), `Marquesina` con 2.ª cinta inversa + pausa al hover, testimonios con sello "Resuelto" que se estampa y carpeta que se levanta, método con línea y escalonado (`.escalon` + `--i`).
+- Verificado con Playwright (movimiento normal): sin desborde horizontal a 390 px, `tsc` y `eslint` sin errores.
+
 2026-09-30 — Sesión: app instalable en celulares (PWA), modo sin conexión y pulido táctil.
 
 2026-09-29 — Sesión anterior: rediseño completo nivel premium ("Folio"), contenido de demo completo, calculadora de indemnización, Sanity conectado con respaldo local, auditoría Lighthouse.

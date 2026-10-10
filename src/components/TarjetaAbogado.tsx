@@ -11,17 +11,23 @@ type Props = {
 export function TarjetaAbogado({ abogado, nombresDeAreas, detalle = false, prioridad = false }: Props) {
   return (
     <article className="group" id={abogado.slug}>
-      <div className="arco relative aspect-[3/4] bg-papel-3">
-        <Image
-          src={abogado.foto}
-          alt={`Retrato de ${abogado.nombre}`}
-          fill
-          loading={prioridad ? "eager" : "lazy"}
-          sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
-          className="foto foto-vivo object-cover object-top group-hover:scale-[1.03]"
-        />
+      <div className="marco marco-arco">
+        <div className="arco brillo relative aspect-[3/4] bg-papel-3">
+          <Image
+            src={abogado.foto}
+            alt={`Retrato de ${abogado.nombre}`}
+            fill
+            loading={prioridad ? "eager" : "lazy"}
+            sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 90vw"
+            className="foto foto-vivo foto-zoom object-cover object-top"
+          />
+        </div>
       </div>
-      <div className="mt-5 border-t border-tinta pt-4">
+      <div className="relative mt-5 border-t border-tinta pt-4">
+        <span
+          aria-hidden
+          className="absolute inset-x-0 -top-px h-px origin-left scale-x-0 bg-lacre transition-transform duration-700 ease-[var(--ease-folio)] group-hover:scale-x-100"
+        />
         <p className="rotulo text-lacre">{abogado.cargo}</p>
         <h3 className="mt-2 font-display text-2xl leading-tight">{abogado.nombre}</h3>
         <p className="mt-1 text-sm text-tinta-3">

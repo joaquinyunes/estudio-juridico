@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { cifras, faqsGenerales, historia, principios } from "@/lib/content";
+import { historia, principios } from "@/lib/content";
 import {
   getAreas,
+  getCifras,
   getDatosDelEstudio,
+  getFaqsGenerales,
   getEquipo,
   getNotas,
   getTestimonios,
@@ -21,6 +23,7 @@ import { TarjetaNota } from "@/components/TarjetaNota";
 import { FAQAccordion } from "@/components/FAQAccordion";
 import { FormularioCalificador } from "@/components/FormularioCalificador";
 import { JsonLd } from "@/components/JsonLd";
+import { Contador } from "@/components/Contador";
 
 const METODO = [
   {
@@ -53,12 +56,14 @@ const TITULAR = [
 ];
 
 export default async function HomePage() {
-  const [areas, testimonios, equipo, notas, datos] = await Promise.all([
+  const [areas, testimonios, equipo, notas, datos, cifras, faqsGenerales] = await Promise.all([
     getAreas(),
     getTestimonios(),
     getEquipo(),
     getNotas(),
     getDatosDelEstudio(),
+    getCifras(),
+    getFaqsGenerales(),
   ]);
   const nombresDeAreas = Object.fromEntries(areas.map((a) => [a.slug, a.nombre]));
   const faqs = [...faqsGenerales, ...areas.flatMap((a) => a.faqs.slice(0, 1))].slice(0, 7);
@@ -115,18 +120,22 @@ export default async function HomePage() {
           </div>
 
           <figure className="relative lg:col-span-5">
-            <div className="arco relative aspect-[4/5] bg-papel-3 lg:aspect-[3/4]">
-              <Image
-                src="/img/hero-congreso.jpg"
-                alt="Cúpula verde del Palacio del Congreso de la Nación, en Buenos Aires, al atardecer"
-                fill
-                loading="eager"
-                fetchPriority="high"
-                sizes="(min-width: 1024px) 38vw, 100vw"
-                className="foto object-cover object-top"
-              />
+            <div className="marco marco-arco">
+              <div className="arco brillo abrir relative aspect-[4/5] bg-papel-3 lg:aspect-[3/4]">
+                <div className="paralaje">
+                  <Image
+                    src="/img/hero-congreso.jpg"
+                    alt="Cúpula verde del Palacio del Congreso de la Nación, en Buenos Aires, al atardecer"
+                    fill
+                    loading="eager"
+                    fetchPriority="high"
+                    sizes="(min-width: 1024px) 38vw, 100vw"
+                    className="foto foto-vivo kenburns object-cover object-top"
+                  />
+                </div>
+              </div>
             </div>
-            <Sello className="absolute -bottom-8 -left-4 h-28 w-28 drop-shadow-xl md:h-36 md:w-36 lg:-left-16" />
+            <Sello className="flotar absolute -bottom-8 -left-4 z-10 h-28 w-28 drop-shadow-xl md:h-36 md:w-36 lg:-left-16" />
             <figcaption className="rotulo mt-5 text-right !text-[0.68rem] text-tinta-3">
               Fig. 1 — Palacio del Congreso, Buenos Aires
             </figcaption>
@@ -134,11 +143,13 @@ export default async function HomePage() {
         </div>
 
         <dl className="filete-doble mt-16 grid grid-cols-2 gap-x-6 gap-y-10 pt-10 text-tinta md:mt-24 lg:grid-cols-4">
-          {cifras.map((c) => (
-            <div key={c.texto}>
+          {cifras.map((c, i) => (
+            <div key={c.texto} className="aparecer escalon" style={{ "--i": i } as React.CSSProperties}>
               <dt className="sr-only">{c.texto}</dt>
               <dd>
-                <span className="display text-[clamp(3rem,6vw,5rem)]">{c.valor}</span>
+                <span className="display text-[clamp(3rem,6vw,5rem)]">
+                  <Contador valor={c.valor} />
+                </span>
                 <span className="font-display text-3xl text-lacre italic">{c.unidad}</span>
                 <span className="mt-2 block max-w-[14rem] text-sm text-tinta-2">{c.texto}</span>
               </dd>
@@ -163,14 +174,16 @@ export default async function HomePage() {
         />
         <div className="mt-16 grid gap-12 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-5 md:col-start-1">
-            <div className="arco relative aspect-[3/4] overflow-hidden bg-papel-3">
-              <Image
-                src="/img/biblioteca-escalera.jpg"
-                alt="Escalera de madera apoyada en una biblioteca de libros antiguos"
-                fill
-                sizes="(min-width: 768px) 38vw, 100vw"
-                className="foto revelar-foto object-cover"
-              />
+            <div className="marco marco-arco">
+              <div className="arco brillo relative aspect-[3/4] bg-papel-3">
+                <Image
+                  src="/img/biblioteca-escalera.jpg"
+                  alt="Escalera de madera apoyada en una biblioteca de libros antiguos"
+                  fill
+                  sizes="(min-width: 768px) 38vw, 100vw"
+                  className="foto foto-vivo revelar-foto object-cover"
+                />
+              </div>
             </div>
           </div>
           <div className="md:col-span-7 md:pl-8 lg:pl-16">
@@ -215,7 +228,7 @@ export default async function HomePage() {
       </section>
 
       {/* ——— § 03 Calculadora ——— */}
-      <section id="calculadora" aria-labelledby="t-calc" className="bg-noche py-24 text-papel md:py-36">
+      <section id="calculadora" aria-labelledby="t-calc" className="noche-vivo bg-noche py-24 text-papel md:py-36">
         <div className="mx-auto max-w-[88rem] px-6">
           <EncabezadoSeccion
             id="t-calc"
@@ -248,9 +261,17 @@ export default async function HomePage() {
           }
         />
         <ol className="mt-16 grid gap-px overflow-hidden border border-linea bg-linea md:grid-cols-2 lg:grid-cols-4">
-          {METODO.map((paso) => (
-            <li key={paso.numero} className="aparecer flex flex-col bg-papel p-8 md:p-10">
-              <span className="font-display text-6xl text-lacre italic [font-variation-settings:'SOFT'_100,'WONK'_1]">
+          {METODO.map((paso, i) => (
+            <li
+              key={paso.numero}
+              style={{ "--i": i } as React.CSSProperties}
+              className="aparecer escalon group relative flex flex-col bg-papel p-8 transition-colors duration-500 hover:bg-papel-2 md:p-10"
+            >
+              <span
+                aria-hidden
+                className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-lacre transition-transform duration-700 ease-[var(--ease-folio)] group-hover:scale-x-100"
+              />
+              <span className="font-display text-6xl text-lacre italic transition-transform duration-500 ease-[var(--ease-folio)] [font-variation-settings:'SOFT'_100,'WONK'_1] group-hover:translate-x-2 group-hover:scale-110">
                 {paso.numero}
               </span>
               <h3 className="mt-10 font-display text-2xl leading-tight">{paso.titulo}</h3>
@@ -292,7 +313,7 @@ export default async function HomePage() {
       </section>
 
       {/* ——— § 06 Historia ——— */}
-      <section aria-labelledby="t-historia" className="overflow-hidden bg-noche py-24 text-papel md:py-36">
+      <section aria-labelledby="t-historia" className="noche-vivo bg-noche py-24 text-papel md:py-36">
         <div className="mx-auto max-w-[88rem] px-6">
           <EncabezadoSeccion
             id="t-historia"
@@ -403,14 +424,18 @@ export default async function HomePage() {
             <h2 id="t-contacto" className="display mt-6 text-[clamp(2.4rem,5vw,4.5rem)]">
               Contanos tu caso. <em>Te respondemos en 48 h.</em>
             </h2>
-            <div className="relative mt-12 aspect-[16/10] overflow-hidden bg-papel-3">
-              <Image
-                src="/img/obelisco.jpg"
-                alt="Avenida de Buenos Aires con el Obelisco al fondo"
-                fill
-                sizes="(min-width: 1024px) 38vw, 100vw"
-                className="foto object-cover"
-              />
+            <div className="esquinas mt-12">
+              <div className="brillo relative aspect-[16/10] bg-papel-3">
+                <div className="paralaje">
+                  <Image
+                    src="/img/obelisco.jpg"
+                    alt="Avenida de Buenos Aires con el Obelisco al fondo"
+                    fill
+                    sizes="(min-width: 1024px) 38vw, 100vw"
+                    className="foto foto-vivo object-cover"
+                  />
+                </div>
+              </div>
             </div>
             <address className="mt-8 grid grid-cols-2 gap-6 text-sm not-italic">
               <div>
