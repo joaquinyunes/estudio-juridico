@@ -26,6 +26,7 @@ export default async function NotasPage() {
         bajada="Notas breves escritas por el equipo del estudio sobre los cambios legales que más consultas generan."
       />
       <div className="mx-auto max-w-[88rem] px-6 pb-24">
+        <h2 className="sr-only">Todas las notas</h2>
         {destacada && (
           <div className="max-w-4xl">
             <TarjetaNota nota={destacada} variante="destacada" />

@@ -49,14 +49,16 @@ export function SiteHeader({ nombre, direccion, horarios, telefonoWhatsapp }: Pr
 
   return (
     <>
-      <a
-        href="#contenido"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:bg-tinta focus:px-4 focus:py-2 focus:text-papel"
-      >
-        Saltar al contenido
-      </a>
+      <nav aria-label="Accesos rápidos">
+        <a
+          href="#contenido"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:bg-tinta focus:px-4 focus:py-2 focus:text-papel"
+        >
+          Saltar al contenido
+        </a>
+      </nav>
 
-      <div className="hidden bg-tinta text-papel/80 md:block">
+      <aside aria-label="Datos del estudio" className="hidden bg-tinta text-papel/80 md:block">
         <div className="mx-auto flex max-w-[88rem] items-center justify-between gap-6 px-6 py-2 rotulo !text-[0.68rem]">
           <span>
             {direccion} · Frente a Tribunales
@@ -77,7 +79,7 @@ export function SiteHeader({ nombre, direccion, horarios, telefonoWhatsapp }: Pr
             </a>
           </span>
         </div>
-      </div>
+      </aside>
 
       <header
         className={`sticky top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-500 ${

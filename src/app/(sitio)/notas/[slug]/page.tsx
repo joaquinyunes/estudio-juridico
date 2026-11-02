@@ -102,7 +102,7 @@ export default async function NotaPage({ params }: { params: Promise<Params> }) 
           </section>
         ))}
 
-        <aside className="mt-16 border-l-2 border-lacre bg-papel-2 p-7">
+        <div className="mt-16 border-l-2 border-lacre bg-papel-2 p-7">
           <p className="rotulo text-lacre">¿Te pasa algo parecido?</p>
           <p className="mt-3 font-display text-2xl leading-snug">
             Contanos tu caso y te decimos en 48 h si conviene avanzar.
@@ -118,7 +118,7 @@ export default async function NotaPage({ params }: { params: Promise<Params> }) 
               Más sobre {area.nombre} →
             </Link>
           )}
-        </aside>
+        </div>
 
         <p className="mt-10 text-sm text-tinta-3">
           Esta nota es informativa y no reemplaza el asesoramiento profesional sobre un caso concreto.

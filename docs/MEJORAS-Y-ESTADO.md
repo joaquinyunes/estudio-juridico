@@ -3,17 +3,18 @@
 # estudio-juridico (sitio de captación, Next.js + Sanity) — rama `rediseno-premium` · `aea86dc`
 
 ## Hecho
-- Rediseño premium, panel de avisos y acceso restringido al panel. Docs de diseño y guía del panel. Es un **producto vendido**. Árbol limpio, sin cambios de código en esta ronda.
+- Rediseño premium, panel de avisos y acceso restringido al panel. Docs de diseño y guía del panel. Es un **producto vendido**.
+- 02/11: rama `integracion` = `rediseno-premium` + `chore/seguridad-ci` (encabezados, CSP en solo reporte, CI). `npm ci`, `tsc`, `lint` y `build` verdes con variables vacías y con las del ejemplo.
+- 02/11 WP-12: `docs/DEPLOY-VERCEL.md` (rama `main` propuesta, tabla de variables, Vercel, Render, checklist). Diseño/accesibilidad: axe-core sin violaciones en 14 páginas tras corregir 4 (landmarks, orden de encabezados, `aside` anidado, 404 sin `main`).
 
 ## Falta (código)
-- **WP-12:** el repo **no tiene `main`**: la rama por defecto (`claude/estudios-juridicos-web-be8i58`, `c11cff2`) está 3 commits detrás de `rediseno-premium`. Proponer rama de producción, verificar `npm run build` con variables vacías y con las del ejemplo, dejar `docs/DEPLOY-VERCEL.md`.
-- Sin CSP (WP-43).
-- **WP-35 (opcional/upsell):** CRM liviano de consultas, agenda de vencimientos. Preguntar antes si el cliente lo quiere.
+- Nada bloqueante. **WP-35 (opcional/upsell):** CRM liviano de consultas; preguntar antes si el cliente lo quiere.
+- No verificado: sitio con claves reales de Sanity/Resend, lector de pantalla, dispositivos reales, que la CSP en solo reporte no avise con la URL real.
 
 ## Te toca a vos
-1. Decidir la rama de producción y fusionar `rediseno-premium` en ella (el servicio de Render ya despliega desde `rediseno-premium`).
-2. Crear el proyecto en **Vercel** (detecta Next solo) y cargar: Sanity, `ADMIN_USER`/`ADMIN_PASSWORD`, Resend, WhatsApp, `NEXT_PUBLIC_SITE_URL`.
-3. **Arranque en frío de 53 s en Render gratis** (inaceptable para un producto vendido): con la regla del dueño, Vercel como principal y Render como respaldo con plan que no se duerma.
+1. Crear `main` desde `integracion`, hacerla rama por defecto y hacer push (pasos en `docs/DEPLOY-VERCEL.md`).
+2. Crear el proyecto en **Vercel** y cargar las variables (tabla en el doc). Sanity y `ADMIN_*` primero; Resend y WhatsApp al final. Verificar el dominio en Resend antes de entregar.
+3. Render como respaldo con plan que no se duerma (gratis tarda ~53 s en frío).
 
 ## Plataformas hoy
 Render `estudio-juridico` (web gratis, rama `rediseno-premium`). No tiene Vercel.
