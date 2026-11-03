@@ -2,6 +2,8 @@
 
 > Estado verificado el 02/11/2026: `npm ci`, `npx tsc --noEmit`, `npm run lint` y `npm run build` terminan con código 0, tanto **sin variables de entorno** como con las del ejemplo. Sin Sanity configurado el sitio usa el contenido de respaldo de `src/lib/content.ts`.
 
+> **Desplegado (03/11/2026):** proyecto Vercel `estudio-juridico` conectado a `main`, en https://estudio-juridico-tau.vercel.app. Cargadas: `ADMIN_USER`, `ADMIN_PASSWORD`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_DATASET`. Pendientes: Sanity, Resend, WhatsApp y dominio propio. Si cambia el dominio, actualizar `NEXT_PUBLIC_SITE_URL` y redeployar (se fija en el build).
+
 ## 1. Rama de producción
 
 El repo no tiene `main`. La rama por defecto en GitHub (`claude/estudios-juridicos-web-be8i58`) está atrasada respecto del diseño actual.
