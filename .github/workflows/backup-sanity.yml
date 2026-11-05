@@ -29,7 +29,7 @@ jobs:
           else
             echo "listo=si" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.cfg.outputs.listo == 'si'
         with:
           node-version: 22
@@ -41,7 +41,7 @@ jobs:
           if [ -n "$LEADS_DATASET" ]; then
             npx --yes sanity@6 dataset export "$LEADS_DATASET" "backup-consultas-$fecha.tar.gz" --project "$SANITY_STUDIO_PROJECT_ID" --no-assets
           fi
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: steps.cfg.outputs.listo == 'si'
         with:
           name: backup-sanity
