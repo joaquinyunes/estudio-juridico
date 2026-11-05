@@ -24,7 +24,28 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx tsc --noEmit
+      - run: npm run lint
       - run: npm run build
+      # Pruebas unitarias del panel (2FA, límites) y de humo del sitio compilado.
+      - run: npm test
+      - name: Accesibilidad (axe, WCAG 2.1 AA)
+        run: |
+          npx playwright-core install --with-deps chromium
+          npm run test:a11y
+
+  dependencias:
+    name: Auditoría de dependencias
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Falla con altas o críticas en producción. Las moderadas de la CLI de Sanity
+      # no corren en el sitio (ver docs/SEGURIDAD.md §S1).
+      - run: npm audit --omit=dev --audit-level=high
 
   secretos:
     name: Escaneo de secretos
