@@ -210,6 +210,10 @@ export function FormularioCalificador({ areas, areaPreseleccionada, tono = "clar
           className={`${campoBase} resize-y`}
           {...register("resumen", reglas.resumen)}
         />
+        <p className={`mt-2 text-sm ${tenue}`}>
+          Contanos lo mínimo: no incluyas DNI, datos de salud, contraseñas ni documentos. Eso lo vemos
+          después, en la reunión.
+        </p>
         {errors.resumen && <p className="mt-2 text-sm text-lacre">{errors.resumen.message}</p>}
       </div>
 

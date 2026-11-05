@@ -10,6 +10,8 @@ const leadSchema = z.object({
   areaNombre: z.string().max(120).optional(),
   urgencia: z.enum(["inmediata", "mes", "informacion"]).optional(),
   resumen: z.string().trim().min(20).max(1500),
+  // Consentimiento (Ley 25.326): se exige también acá, no solo en el navegador.
+  acepta: z.literal(true),
   empresa: z.string().optional(), // honeypot
 });
 
@@ -24,8 +26,14 @@ function limitado(ip: string): boolean {
   const recientes = (intentos.get(ip) ?? []).filter((t) => ahora - t < VENTANA_MS);
   recientes.push(ahora);
   intentos.set(ip, recientes);
+  // Evita que el mapa crezca sin límite con IPs que no vuelven.
+  if (intentos.size > 5000) {
+    for (const [k, v] of intentos) if (ahora - v[v.length - 1] >= VENTANA_MS) intentos.delete(k);
+  }
   return recientes.length > MAX_POR_VENTANA;
 }
+
+const MAX_BODY_BYTES = 8 * 1024;
 
 const escapar = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -36,7 +44,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Demasiados envíos, probá en unos minutos" }, { status: 429 });
   }
 
-  const body = await request.json().catch(() => null);
+  if (!request.headers.get("content-type")?.includes("application/json")) {
+    return NextResponse.json({ error: "Formato no soportado" }, { status: 415 });
+  }
+  // El tope se aplica al texto leído (no solo a Content-Length, que puede mentir).
+  const texto = await request.text();
+  if (new TextEncoder().encode(texto).length > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: "Mensaje demasiado largo" }, { status: 413 });
+  }
+  const body = (() => {
+    try {
+      return JSON.parse(texto);
+    } catch {
+      return null;
+    }
+  })();
   const parsed = leadSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
@@ -89,6 +111,7 @@ async function guardarEnSanity(lead: {
     ...lead,
     estado: "nuevo",
     recibido: new Date().toISOString(),
+    consentimientoEn: new Date().toISOString(),
   });
   return true;
 }

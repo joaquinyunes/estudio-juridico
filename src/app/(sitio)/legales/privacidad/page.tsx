@@ -26,6 +26,21 @@ export default async function PrivacidadPage() {
         "Exclusivamente para evaluar y responder tu consulta. No los vendemos, no los cedemos a terceros y no los usamos con fines publicitarios. Están protegidos por el secreto profesional.",
     },
     {
+      titulo: "Datos sensibles y secreto profesional",
+      texto:
+        "Te pedimos que en el formulario cuentes solo lo mínimo para orientarte y que no incluyas datos sensibles (salud, religión, afiliación sindical o política, vida sexual, origen racial o étnico), números de documento, contraseñas ni documentos. Lo que nos compartas está alcanzado por el secreto profesional. Enviar el formulario no genera una relación profesional: eso ocurre recién cuando acordamos el encargo.",
+    },
+    {
+      titulo: "Quiénes procesan los datos y dónde",
+      texto:
+        "Para recibir tu consulta usamos proveedores que actúan por nuestra cuenta: un servicio de alojamiento y de contenidos (Vercel y Sanity), un servicio de envío de correo (Resend) y, si elegís continuar por ese medio, WhatsApp. Algunos de estos proveedores almacenan datos fuera de la Argentina, por ejemplo en Estados Unidos o la Unión Europea. Los datos solo se comparten con ellos para prestar el servicio, y las consultas se guardan en un espacio privado de acceso restringido al estudio.",
+    },
+    {
+      titulo: "Cuánto tiempo los conservamos",
+      texto:
+        "Solo el tiempo necesario para evaluar y responder tu consulta, y para cumplir las obligaciones profesionales si luego nos encargás el caso. Si no seguimos adelante, los suprimimos cuando lo pidas (ver «Tus derechos»).",
+    },
+    {
       titulo: "Tus derechos",
       texto: `Podés solicitar el acceso, la rectificación o la supresión de tus datos en cualquier momento escribiendo a ${datos.email}, en los términos de la Ley 25.326 de Protección de los Datos Personales. La Agencia de Acceso a la Información Pública, órgano de control de la ley, atiende las denuncias y reclamos relativos a su incumplimiento.`,
     },

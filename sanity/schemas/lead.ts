@@ -24,6 +24,7 @@ export default defineType({
     }),
     defineField({ name: "resumen", title: "Resumen del caso", type: "text", readOnly: true }),
     defineField({ name: "recibido", title: "Recibido", type: "datetime", readOnly: true }),
+    defineField({ name: "consentimientoEn", title: "Consentimiento dado el", type: "datetime", readOnly: true }),
     defineField({
       name: "estado",
       title: "Estado",
