@@ -1,0 +1,4 @@
+Contact: mailto:consultas@iturbelavalle.example
+Expires: 2027-11-05T00:00:00.000Z
+Preferred-Languages: es, en
+Canonical: https://estudio-juridico-tau.vercel.app/.well-known/security.txt

@@ -1,0 +1,24 @@
+# Actualizaciones semanales agrupadas: un solo PR por semana (menos despliegues de
+# previsualización en Vercel). Las de seguridad se abren aparte y de inmediato.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      menores-y-parches:
+        update-types: [minor, patch]
+    ignore:
+      # Saltos de versión mayor se hacen a mano, con prueba de build y del Studio.
+      - dependency-name: "*"
+        update-types: [version-update:semver-major]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      acciones:
+        patterns: ["*"]

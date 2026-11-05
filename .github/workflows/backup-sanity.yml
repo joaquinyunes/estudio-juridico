@@ -1,0 +1,50 @@
+name: Backup de Sanity
+
+# Exporta el dataset de contenido (y el privado de consultas, si existe) cada
+# domingo y lo guarda 30 días como artefacto del workflow. No hace nada hasta que
+# se cargue el secreto SANITY_API_TOKEN (token de LECTURA) en
+# Settings → Secrets → Actions. Ver docs/SEGURIDAD.md §S10 para restaurar.
+on:
+  schedule:
+    - cron: "17 5 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exportar:
+    runs-on: ubuntu-latest
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
+      SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID }}
+      LEADS_DATASET: ${{ vars.SANITY_LEADS_DATASET }}
+    steps:
+      - name: Verificar configuración
+        id: cfg
+        run: |
+          if [ -z "$SANITY_AUTH_TOKEN" ] || [ -z "$SANITY_STUDIO_PROJECT_ID" ]; then
+            echo "Falta el secreto SANITY_API_TOKEN o la variable SANITY_PROJECT_ID: no se exporta."
+            echo "listo=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "listo=si" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.cfg.outputs.listo == 'si'
+        with:
+          node-version: 22
+      - name: Exportar datasets
+        if: steps.cfg.outputs.listo == 'si'
+        run: |
+          fecha=$(date +%F)
+          npx --yes sanity@6 dataset export production "backup-contenido-$fecha.tar.gz" --project "$SANITY_STUDIO_PROJECT_ID" --no-assets
+          if [ -n "$LEADS_DATASET" ]; then
+            npx --yes sanity@6 dataset export "$LEADS_DATASET" "backup-consultas-$fecha.tar.gz" --project "$SANITY_STUDIO_PROJECT_ID" --no-assets
+          fi
+      - uses: actions/upload-artifact@v4
+        if: steps.cfg.outputs.listo == 'si'
+        with:
+          name: backup-sanity
+          path: backup-*.tar.gz
+          retention-days: 30
+          if-no-files-found: error

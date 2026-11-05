@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
-// Política en modo SOLO REPORTE: los scripts en línea de Next.js obligan a dejar
-// 'unsafe-inline' hasta que se pasen a nonces. Para activarla, cambiar la clave
-// "Content-Security-Policy-Report-Only" por "Content-Security-Policy".
-const cspReportOnly = [
+// Política APLICADA (bloquea). Los scripts en línea de Next.js obligan a mantener
+// 'unsafe-inline' en script-src hasta que se pasen a nonces (shortcut: protege
+// frente a orígenes externos, a object/base/form/frame, pero no frente a XSS inline;
+// pasar a nonces con el proxy cuando se quiera cerrar eso). El Studio de Sanity
+// queda fuera (ver headers()). Violaciones: consola del navegador.
+const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
   "style-src 'self' 'unsafe-inline'",
@@ -11,6 +13,7 @@ const cspReportOnly = [
   "font-src 'self' data:",
   "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
   "frame-src https://maps.google.com https://www.google.com",
+  "upgrade-insecure-requests",
   "worker-src 'self'",
   "manifest-src 'self'",
   "object-src 'none'",
@@ -31,9 +34,7 @@ const securityHeaders = [
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
   },
-  // Solo frame-ancestors aplicado (equivale a X-Frame-Options); el resto va en modo reporte.
-  { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
-  { key: "Content-Security-Policy-Report-Only", value: cspReportOnly },
+  { key: "Content-Security-Policy", value: csp },
 ];
 
 const nextConfig: NextConfig = {
@@ -46,8 +47,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // El Studio de Sanity necesita poder embeberse a sí mismo.
-        source: "/((?!studio).*)",
+        // El Studio de Sanity necesita poder embeberse a sí mismo; /sw.js lleva su propia CSP.
+        source: "/((?!studio|sw.js).*)",
         headers: securityHeaders,
       },
       {
@@ -56,6 +57,8 @@ const nextConfig: NextConfig = {
           { key: "Content-Type", value: "application/javascript; charset=utf-8" },
           { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
           { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
         ],
       },
     ];

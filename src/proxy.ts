@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verificarTotp } from "./lib/totp.ts";
 
 /**
  * Candado del panel de administración (/studio).
@@ -8,8 +9,15 @@ import type { NextRequest } from "next/server";
  * entregar siquiera la pantalla del panel. Segunda barrera: Sanity, que solo
  * deja editar a los usuarios invitados al proyecto.
  *
- * Sin ADMIN_PASSWORD el panel queda cerrado en producción (falla cerrado).
+ * Sin ADMIN_PASSWORD (o con una de menos de 12 caracteres) el panel queda cerrado
+ * en producción (falla cerrado).
+ *
+ * Segundo factor opcional: con ADMIN_TOTP_SECRET (base32) la contraseña se
+ * escribe seguida del código de 6 dígitos de la app autenticadora, sin espacio
+ * (ej.: «mi-clave-larga123456»). Ver docs/SEGURIDAD.md.
  */
+
+const LARGO_MINIMO_CLAVE = 12;
 
 const REALM = 'Basic realm="Panel del estudio", charset="UTF-8"';
 const VENTANA_MS = 15 * 60 * 1000;
@@ -50,13 +58,18 @@ function respuesta(status: number, cuerpo: string, extra: Record<string, string>
   });
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const clave = process.env.ADMIN_PASSWORD;
+  const secretoTotp = process.env.ADMIN_TOTP_SECRET;
   const usuario = process.env.ADMIN_USER ?? "admin";
 
   if (!clave) {
     // Desarrollo local: se puede entrar sin contraseña. En producción, nunca.
     if (process.env.NODE_ENV === "development") return NextResponse.next();
+    return respuesta(404, "No encontrado");
+  }
+  if (clave.length < LARGO_MINIMO_CLAVE && process.env.NODE_ENV !== "development") {
+    console.error(`ADMIN_PASSWORD demasiado corta (mínimo ${LARGO_MINIMO_CLAVE}); /studio queda cerrado`);
     return respuesta(404, "No encontrado");
   }
 
@@ -72,9 +85,15 @@ export function proxy(request: NextRequest) {
   const enviadas = leerCredenciales(request.headers.get("authorization"));
   // Se evalúan las dos comparaciones siempre, sin cortocircuito.
   const usuarioOk = iguales(enviadas?.usuario ?? "", usuario);
-  const claveOk = iguales(enviadas?.clave ?? "", clave);
+  // Con 2FA, el final de la contraseña enviada son los 6 dígitos del código.
+  const recibida = enviadas?.clave ?? "";
+  const claveSola = secretoTotp ? recibida.slice(0, -6) : recibida;
+  const claveOk = iguales(claveSola, clave);
+  const totpOk = secretoTotp
+    ? await verificarTotp(secretoTotp, recibida.slice(-6)).catch(() => false)
+    : true;
 
-  if (enviadas && usuarioOk && claveOk) {
+  if (enviadas && usuarioOk && claveOk && totpOk) {
     fallos.delete(ip);
     return NextResponse.next({ headers: { "Cache-Control": "no-store" } });
   }
