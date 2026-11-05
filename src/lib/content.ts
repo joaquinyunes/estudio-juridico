@@ -90,8 +90,11 @@ export const datosDelEstudio = {
     linkedin: "https://www.linkedin.com/",
     instagram: "https://www.instagram.com/",
   },
-  /** Muestra el aviso "estudio ficticio" en el pie. Poner en false con datos reales. */
-  modoDemo: true,
+  /**
+   * Muestra el aviso "estudio ficticio" en el pie y en el aviso legal. Con datos
+   * reales, definir NEXT_PUBLIC_MODO_DEMO=0 en el hosting (sin definir: sigue activo).
+   */
+  modoDemo: process.env.NEXT_PUBLIC_MODO_DEMO !== "0",
 };
 
 export type Cifra = { valor: string; unidad: string; texto: string };

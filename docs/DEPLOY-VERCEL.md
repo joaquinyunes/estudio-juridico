@@ -30,7 +30,9 @@ Se cargan en Vercel → Project → Settings → Environment Variables (entorno 
 | `SANITY_API_TOKEN` | Escritura de consultas en Sanity | Las consultas no se guardan |
 | `SANITY_LEADS_DATASET` | Dataset **privado** para consultas (`consultas`) | Las consultas llegan solo por email |
 | `ADMIN_USER` | Usuario de la primera barrera de `/studio` | Usa `admin` |
-| `ADMIN_PASSWORD` | Contraseña de `/studio` | **`/studio` responde 404 en producción** (falla cerrado) |
+| `ADMIN_PASSWORD` | Contraseña de `/studio`, **mínimo 12 caracteres** | **`/studio` responde 404 en producción** (falla cerrado), también si tiene menos de 12 |
+| `ADMIN_TOTP_SECRET` | 2FA de `/studio` (generar con `node scripts/generar-totp.mjs`; ver `docs/SEGURIDAD.md`) | Solo usuario y contraseña |
+| `NEXT_PUBLIC_MODO_DEMO` | `0` en el sitio real del estudio: oculta el aviso «estudio ficticio» | Aviso visible (demo) |
 | `RESEND_API_KEY` | Envío de email del formulario | No se envía email |
 | `RESEND_FROM` | Remitente (dominio verificado en Resend) | `onboarding@resend.dev`, que solo entrega al dueño de la cuenta de Resend: **verificar el dominio antes de entregar** |
 | `LEADS_EMAIL` | Destinatario de las consultas | Email del estudio |
@@ -62,12 +64,12 @@ El plan gratis se duerme y el primer pedido tarda ~53 s: no sirve para un produc
 - [ ] `/studio` pide usuario y contraseña (401 sin credenciales); sin `ADMIN_PASSWORD` responde 404.
 - [ ] Enviar una consulta de prueba: llega el email y, si hay dataset `consultas`, queda guardada.
 - [ ] `/sitemap.xml` y `/robots.txt` muestran la URL real.
-- [ ] Consola del navegador sin avisos de CSP (ver abajo).
+- [ ] Consola del navegador sin bloqueos de CSP (ver §6).
 - [ ] El botón de WhatsApp abre el número del estudio.
 
-## 6. CSP en modo «solo reporte»
+## 6. CSP (aplicada desde el 05/11/2026)
 
-`next.config.ts` envía `Content-Security-Policy-Report-Only` con `'unsafe-inline'` en scripts (Next.js lo necesita hasta pasar a nonces). Solo `frame-ancestors` se aplica. Revisar la consola con la URL real y, si no hay avisos, cambiar la clave a `Content-Security-Policy`. Si se activa GA4 o se embebe otro servicio, agregar su dominio a la política.
+`next.config.ts` envía `Content-Security-Policy` en modo **bloqueo** con `'unsafe-inline'` en scripts y estilos (Next.js lo necesita hasta pasar a nonces); el Studio de Sanity queda fuera. Con la URL real, revisar la consola del navegador: si algo legítimo queda bloqueado (se activa GA4 u otro servicio embebido), agregar su dominio a la política. Detalle en `docs/SEGURIDAD.md`.
 
 ## 7. Lo que no se pudo verificar sin cuentas reales
 
