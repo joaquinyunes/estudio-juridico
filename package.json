@@ -9,18 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@sanity/client": "^8.4.0",
+    "@sanity/client": "^8.14.1",
     "@sanity/image-url": "^2.1.1",
     "@vercel/analytics": "^2.0.1",
-    "next": "16.3.4",
-    "next-sanity": "^13.3.4",
+    "next": "^16.4.5",
+    "next-sanity": "^13.4.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.87.0",
     "resend": "^6.25.0",
-    "sanity": "^6.12.0",
+    "sanity": "^6.22.0",
     "server-only": "^0.0.1",
-    "zod": "^4.5.4"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -28,8 +28,16 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.4",
+    "eslint-config-next": "^16.4.5",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "dompurify": "^3.4.17",
+    "undici": "^7.30.2",
+    "@vercel/frameworks": {
+      "js-yaml": "^3.15.2",
+      "smol-toml": "^1.9.1"
+    }
   }
 }
