@@ -76,6 +76,30 @@ export const datosDelEstudio = {
   nombre: "Iturbe & Lavalle",
   nombreLegal: "Iturbe & Lavalle — Abogados",
   fundacion: 1987,
+  // — Marca (editable en Sanity → «Datos del estudio»; ver docs/NUEVO-ESTUDIO.md) —
+  monograma: "I&L",
+  fundador: "Ernesto Iturbe",
+  ciudad: "Buenos Aires",
+  siglaCiudad: "CABA",
+  provincia: "Provincia de Buenos Aires",
+  referenciaCorta: "Frente a Tribunales",
+  // — Textos con marcadores: {nombre} {fundador} {ciudad} {fundacion} {anios}/{Anios} {abogados}/{Abogados} {areas}/{Areas} —
+  descripcionSitio:
+    "Estudio jurídico en {ciudad} desde {fundacion}. Derecho laboral, familia, penal, comercial y sucesiones. Evaluación de tu caso sin costo en 48 h.",
+  heroBajada:
+    "{Anios} años frente a Tribunales explicando el derecho en castellano. Contanos tu caso y en 48 horas te decimos, sin costo, si conviene avanzar y qué podés esperar.",
+  estudioTitulo: "Hablamos claro",
+  estudioTituloEnfasis: "desde {fundacion}.",
+  estudioParrafo:
+    "{fundador} abrió el estudio con una convicción simple: nadie debería salir de la oficina de un abogado sabiendo menos que cuando entró. {Anios} años después, somos {abogados} abogados y {areas} áreas de práctica, pero la regla es la misma. Te explicamos tu situación en palabras que se entienden, te decimos la verdad aunque no sea lo que querías escuchar, y ponemos todo por escrito.",
+  historiaTitulo: "{Anios} años",
+  historiaTituloEnfasis: "en la misma puerta.",
+  historiaBajada:
+    "De una máquina de escribir a la guardia por WhatsApp. Deslizá para recorrer la historia del estudio.",
+  equipoTitulo: "{Abogados} abogados.",
+  equipoTituloEnfasis: "Un solo trato.",
+  contactoDescripcion:
+    "Contanos tu caso y te respondemos en 48 horas hábiles, sin costo. Oficina frente a Tribunales, en Talcahuano 638, CABA.",
   telefonoWhatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "5491100000000",
   telefono: "+54 11 4371-0000",
   direccion: "Talcahuano 638, piso 4",

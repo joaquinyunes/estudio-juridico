@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAreas, getEquipo } from "@/lib/cms";
+import { getAreas, getDatosDelEstudio, getEquipo } from "@/lib/cms";
+import { resolverTextos } from "@/lib/plantilla";
 import { buildEquipoJsonLd } from "@/lib/schema-org";
 import { CabeceraPagina } from "@/components/CabeceraPagina";
 import { TarjetaAbogado } from "@/components/TarjetaAbogado";
@@ -14,7 +15,8 @@ export const metadata: Metadata = {
 };
 
 export default async function EquipoPage() {
-  const [equipo, areas] = await Promise.all([getEquipo(), getAreas()]);
+  const [equipo, areas, datos] = await Promise.all([getEquipo(), getAreas(), getDatosDelEstudio()]);
+  const t = resolverTextos(datos, { abogados: equipo.length, areas: areas.length });
   const nombresDeAreas = Object.fromEntries(areas.map((a) => [a.slug, a.nombre]));
   const socios = equipo.filter((a) => a.socio);
   const asociados = equipo.filter((a) => !a.socio);
@@ -26,7 +28,7 @@ export default async function EquipoPage() {
         rotulo="Equipo"
         titulo={
           <>
-            Siete abogados. <em>Un solo trato.</em>
+            {t.equipoTitulo} <em>{t.equipoTituloEnfasis}</em>
           </>
         }
         bajada="Cada caso tiene un responsable con nombre y apellido, que lo lleva de principio a fin. Estas son las personas que vas a encontrar del otro lado."

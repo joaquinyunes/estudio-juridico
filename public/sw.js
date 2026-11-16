@@ -1,5 +1,5 @@
 /*
- * Service worker de Iturbe & Lavalle.
+ * Service worker del sitio.
  *
  * - Páginas: primero la red (contenido siempre fresco); sin conexión, la última
  *   versión guardada o la página /offline.

@@ -6,6 +6,7 @@ import nota from "./nota";
 import lead from "./lead";
 import aviso from "./aviso";
 import faqGeneral from "./faqGeneral";
+import hito from "./hito";
 
 export const schemaTypes = [
   areaDePractica,
@@ -13,6 +14,7 @@ export const schemaTypes = [
   testimonio,
   nota,
   faqGeneral,
+  hito,
   datosDelEstudio,
   aviso,
   lead,

@@ -4,6 +4,7 @@ import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { getDatosDelEstudio } from "@/lib/cms";
 import { SITE_URL } from "@/lib/schema-org";
+import { rellenar } from "@/lib/plantilla";
 import { RegistrarServiceWorker } from "@/components/RegistrarServiceWorker";
 import "./globals.css";
 
@@ -20,12 +21,11 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export async function generateMetadata(): Promise<Metadata> {
   const datos = await getDatosDelEstudio();
-  const descripcion =
-    "Estudio jurídico en Buenos Aires desde 1987. Derecho laboral, familia, penal, comercial y sucesiones. Evaluación de tu caso sin costo en 48 h.";
+  const descripcion = rellenar(datos.descripcionSitio, datos, { abogados: 0, areas: 0 });
   return {
     metadataBase: new URL(SITE_URL),
     title: {
-      default: `${datos.nombre} — Abogados en Buenos Aires desde 1987`,
+      default: `${datos.nombre} — Abogados en ${datos.ciudad} desde ${datos.fundacion}`,
       template: `%s — ${datos.nombre}`,
     },
     description: descripcion,
@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: "es_AR",
       siteName: datos.nombreLegal,
-      title: `${datos.nombre} — Abogados en Buenos Aires`,
+      title: `${datos.nombre} — Abogados en ${datos.ciudad}`,
       description: descripcion,
     },
     twitter: { card: "summary_large_image" },

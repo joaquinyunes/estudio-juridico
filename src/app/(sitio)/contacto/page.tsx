@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { getAreas, getDatosDelEstudio } from "@/lib/cms";
+import { getAreas, getDatosDelEstudio, getEquipo } from "@/lib/cms";
+import { resolverTextos } from "@/lib/plantilla";
 import { FormularioCalificador } from "@/components/FormularioCalificador";
 import { WhatsAppCTA } from "@/components/WhatsAppCTA";
 import { MapaOficina } from "@/components/MapaOficina";
 
-export const metadata: Metadata = {
-  title: "Contacto",
-  description:
-    "Contanos tu caso y te respondemos en 48 horas hábiles, sin costo. Oficina frente a Tribunales, en Talcahuano 638, CABA.",
-  alternates: { canonical: "/contacto" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [datos, areas, equipo] = await Promise.all([getDatosDelEstudio(), getAreas(), getEquipo()]);
+  const t = resolverTextos(datos, { abogados: equipo.length, areas: areas.length });
+  return {
+    title: "Contacto",
+    description: t.contactoDescripcion,
+    alternates: { canonical: "/contacto" },
+  };
+}
 
 export default async function ContactoPage({ searchParams }: PageProps<"/contacto">) {
   const { area } = await searchParams;

@@ -24,10 +24,10 @@ export async function generateStaticParams(): Promise<Params[]> {
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
-  const area = await getArea(slug);
+  const [area, datos] = await Promise.all([getArea(slug), getDatosDelEstudio()]);
   if (!area) return {};
   return {
-    title: `${area.nombre} en Buenos Aires`,
+    title: `${area.nombre} en ${datos.ciudad}`,
     description: area.descripcionCorta,
     alternates: { canonical: `/areas/${area.slug}` },
     openGraph: { title: `${area.nombre} — ${area.titular}`, description: area.descripcionCorta },

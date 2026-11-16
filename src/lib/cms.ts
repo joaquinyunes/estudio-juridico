@@ -6,6 +6,7 @@ import type {
   AreaDePractica,
   Cifra,
   Faq,
+  Hito,
   Nota,
   Testimonio,
 } from "./content";
@@ -102,7 +103,12 @@ export async function getNota(slug: string): Promise<Nota | undefined> {
 
 export async function getDatosDelEstudio(): Promise<typeof local.datosDelEstudio> {
   const remoto = await fetchOr<Partial<typeof local.datosDelEstudio> | null>(
-    `*[_type == "datosDelEstudio"][0]{nombre, horarios, guardia, direccion, referencia, telefono, telefonoWhatsapp, email}`,
+    `*[_type == "datosDelEstudio"][0]{
+      nombre, nombreLegal, fundacion, monograma, fundador, ciudad, siglaCiudad, provincia, referenciaCorta,
+      horarios, guardia, direccion, localidad, referencia, telefono, telefonoWhatsapp, email,
+      descripcionSitio, heroBajada, estudioTitulo, estudioTituloEnfasis, estudioParrafo,
+      historiaTitulo, historiaTituloEnfasis, historiaBajada, equipoTitulo, equipoTituloEnfasis, contactoDescripcion
+    }`,
     null,
   );
   // Los campos vacíos del panel no pisan los valores de respaldo.
@@ -119,6 +125,18 @@ export async function getCifras(): Promise<Cifra[]> {
     null,
   );
   return remotas && remotas.length > 0 ? remotas : local.cifras;
+}
+
+/** Línea de tiempo de «Historia»: del panel si hay hitos cargados; si no, los de respaldo. */
+export function getHistoria(): Promise<Hito[]> {
+  return fetchOr(
+    `*[_type == "hito"] | order(orden asc) {
+      anio, titulo, texto,
+      "imagen": coalesce(imagen.asset->url, "/img/biblioteca.jpg"),
+      "imagenAlt": coalesce(imagen.alt, titulo)
+    }`,
+    local.historia,
+  );
 }
 
 export function getFaqsGenerales(): Promise<Faq[]> {

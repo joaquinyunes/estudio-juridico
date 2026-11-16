@@ -3,7 +3,11 @@ type Props = {
   /** Anima el anillo de texto (se desactiva con prefers-reduced-motion). */
   animado?: boolean;
   texto?: string;
+  marca: Marca;
 };
+
+/** Lo que el sello muestra del estudio (sale de `datosDelEstudio`). */
+export type Marca = { nombre: string; monograma: string; fundacion: number; ciudad: string };
 
 // Las coordenadas usan un viewBox de 400 para que el texto del SVG tenga un
 // tamaño nominal legible (≥ 12 px) para herramientas de accesibilidad.
@@ -12,14 +16,15 @@ type Props = {
 export function Sello({
   className,
   animado = true,
-  texto = "ITURBE & LAVALLE · ABOGADOS · DESDE 1987 · BUENOS AIRES · ",
+  marca,
+  texto = `${marca.nombre.toUpperCase()} · ABOGADOS · DESDE ${marca.fundacion} · ${marca.ciudad.toUpperCase()} · `,
 }: Props) {
   return (
     <svg
       viewBox="0 0 400 400"
       className={className}
       role="img"
-      aria-label="Sello de Iturbe & Lavalle, abogados desde 1987"
+      aria-label={`Sello de ${marca.nombre}, abogados desde ${marca.fundacion}`}
     >
       <defs>
         <path
@@ -65,14 +70,14 @@ export function Sello({
         fontSize="96"
         fontStyle="italic"
       >
-        I&amp;L
+        {marca.monograma}
       </text>
     </svg>
   );
 }
 
 /** Monograma compacto para el encabezado. */
-export function Monograma({ className }: { className?: string }) {
+export function Monograma({ className, iniciales }: { className?: string; iniciales: string }) {
   return (
     <svg viewBox="0 0 96 96" className={className} aria-hidden>
       <circle cx="48" cy="48" r="46" fill="var(--color-lacre)" />
@@ -86,7 +91,7 @@ export function Monograma({ className }: { className?: string }) {
         fontSize="34"
         fontStyle="italic"
       >
-        I&amp;L
+        {iniciales}
       </text>
     </svg>
   );

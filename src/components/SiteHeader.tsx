@@ -18,12 +18,16 @@ const NAV = [
 
 type Props = {
   nombre: string;
+  monograma: string;
+  fundacion: number;
   direccion: string;
+  siglaCiudad: string;
+  referenciaCorta: string;
   horarios: string;
   telefonoWhatsapp: string;
 };
 
-export function SiteHeader({ nombre, direccion, horarios, telefonoWhatsapp }: Props) {
+export function SiteHeader({ nombre, monograma, fundacion, direccion, siglaCiudad, referenciaCorta, horarios, telefonoWhatsapp }: Props) {
   const [abierto, setAbierto] = useState(false);
   const [compacto, setCompacto] = useState(false);
   const pathname = usePathname();
@@ -61,7 +65,7 @@ export function SiteHeader({ nombre, direccion, horarios, telefonoWhatsapp }: Pr
       <aside aria-label="Datos del estudio" className="hidden bg-tinta text-papel/80 md:block">
         <div className="mx-auto flex max-w-[88rem] items-center justify-between gap-6 px-6 py-2 rotulo !text-[0.68rem]">
           <span>
-            {direccion} · Frente a Tribunales
+            {direccion} · {referenciaCorta}
           </span>
           <span className="flex items-center gap-6">
             <span>{horarios}</span>
@@ -94,11 +98,11 @@ export function SiteHeader({ nombre, direccion, horarios, telefonoWhatsapp }: Pr
           }`}
         >
           <Link href="/" className="group flex items-center gap-3">
-            <Monograma className="h-10 w-10 transition-transform duration-700 group-hover:rotate-[20deg]" />
+            <Monograma iniciales={monograma} className="h-10 w-10 transition-transform duration-700 group-hover:rotate-[20deg]" />
             <span className="leading-none">
               <span className="block font-display text-[1.35rem] tracking-tight">{nombre}</span>
               <span className="rotulo mt-1 block !text-[0.68rem] text-tinta-3">
-                Abogados · Desde 1987
+                Abogados · Desde {fundacion}
               </span>
             </span>
           </Link>
@@ -172,7 +176,7 @@ export function SiteHeader({ nombre, direccion, horarios, telefonoWhatsapp }: Pr
             </ol>
           </nav>
           <div className="mt-8 space-y-2 text-sm text-tinta-2">
-            <p>{direccion}, CABA</p>
+            <p>{direccion}, {siglaCiudad}</p>
             <p>{horarios}</p>
             <a
               href={guardiaHref}

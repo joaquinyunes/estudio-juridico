@@ -96,10 +96,10 @@ export function SiteFooter({ datos, areas }: Props) {
               fontSize="160"
               letterSpacing="-6"
             >
-              Iturbe &amp; Lavalle
+              {datos.nombre}
             </text>
           </svg>
-          <Sello className="absolute right-0 bottom-0 h-20 w-20 md:h-36 md:w-36" />
+          <Sello marca={datos} className="absolute right-0 bottom-0 h-20 w-20 md:h-36 md:w-36" />
         </div>
 
         <div className="filete-doble mt-8 pt-6 text-papel/20">

@@ -16,7 +16,11 @@ export default async function SitioLayout({ children }: LayoutProps<"/">) {
       {aviso && <AvisoDelSitio aviso={aviso} />}
       <SiteHeader
         nombre={datos.nombre}
+        monograma={datos.monograma}
+        fundacion={datos.fundacion}
         direccion={datos.direccion}
+        siglaCiudad={datos.siglaCiudad}
+        referenciaCorta={datos.referenciaCorta}
         horarios={datos.horarios}
         telefonoWhatsapp={datos.telefonoWhatsapp}
       />

@@ -1,16 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import { historia, principios } from "@/lib/content";
+import { principios } from "@/lib/content";
 import {
   getAreas,
   getCifras,
   getDatosDelEstudio,
   getFaqsGenerales,
   getEquipo,
+  getHistoria,
   getNotas,
   getTestimonios,
 } from "@/lib/cms";
 import { buildFaqPageJsonLd } from "@/lib/schema-org";
+import { resolverTextos } from "@/lib/plantilla";
 import { Sello } from "@/components/Sello";
 import { Marquesina } from "@/components/Marquesina";
 import { EncabezadoSeccion } from "@/components/EncabezadoSeccion";
@@ -56,7 +58,7 @@ const TITULAR = [
 ];
 
 export default async function HomePage() {
-  const [areas, testimonios, equipo, notas, datos, cifras, faqsGenerales] = await Promise.all([
+  const [areas, testimonios, equipo, notas, datos, cifras, faqsGenerales, historia] = await Promise.all([
     getAreas(),
     getTestimonios(),
     getEquipo(),
@@ -64,7 +66,9 @@ export default async function HomePage() {
     getDatosDelEstudio(),
     getCifras(),
     getFaqsGenerales(),
+    getHistoria(),
   ]);
+  const t = resolverTextos(datos, { abogados: equipo.length, areas: areas.length });
   const nombresDeAreas = Object.fromEntries(areas.map((a) => [a.slug, a.nombre]));
   const faqs = [...faqsGenerales, ...areas.flatMap((a) => a.faqs.slice(0, 1))].slice(0, 7);
 
@@ -79,7 +83,7 @@ export default async function HomePage() {
             <p className="rotulo flex flex-wrap items-center gap-x-3 gap-y-2 text-tinta-3">
               <span className="text-lacre">Estudio jurídico</span>
               <span aria-hidden className="h-px w-8 bg-linea" />
-              <span>Buenos Aires</span>
+              <span>{datos.ciudad}</span>
               <span aria-hidden className="h-px w-8 bg-linea" />
               <span>Desde {datos.fundacion}</span>
             </p>
@@ -93,8 +97,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-tinta-2 md:text-xl">
-              Treinta y nueve años frente a Tribunales explicando el derecho en castellano. Contanos
-              tu caso y en 48 horas te decimos, sin costo, si conviene avanzar y qué podés esperar.
+              {t.heroBajada}
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -135,7 +138,7 @@ export default async function HomePage() {
                 </div>
               </div>
             </div>
-            <Sello className="flotar absolute -bottom-8 -left-4 z-10 h-28 w-28 drop-shadow-xl md:h-36 md:w-36 lg:-left-16" />
+            <Sello marca={datos} className="flotar absolute -bottom-8 -left-4 z-10 h-28 w-28 drop-shadow-xl md:h-36 md:w-36 lg:-left-16" />
             <figcaption className="rotulo mt-5 text-right !text-[0.68rem] text-tinta-3">
               Fig. 1 — Palacio del Congreso, Buenos Aires
             </figcaption>
@@ -168,7 +171,7 @@ export default async function HomePage() {
           rotulo="El estudio"
           titulo={
             <>
-              Hablamos claro <em>desde 1987.</em>
+              {t.estudioTitulo} <em>{t.estudioTituloEnfasis}</em>
             </>
           }
         />
@@ -188,11 +191,7 @@ export default async function HomePage() {
           </div>
           <div className="md:col-span-7 md:pl-8 lg:pl-16">
             <p className="capitular text-xl leading-relaxed text-tinta-2 md:text-[1.35rem]">
-              Ernesto Iturbe abrió el estudio con una convicción simple: nadie debería salir de la
-              oficina de un abogado sabiendo menos que cuando entró. Treinta y nueve años después,
-              somos siete abogados y cinco áreas de práctica, pero la regla es la misma. Te
-              explicamos tu situación en palabras que se entienden, te decimos la verdad aunque no
-              sea lo que querías escuchar, y ponemos todo por escrito.
+              {t.estudioParrafo}
             </p>
             <ol className="mt-14 border-t border-tinta">
               {principios.map((p) => (
@@ -322,10 +321,10 @@ export default async function HomePage() {
             rotulo="Historia"
             titulo={
               <>
-                Treinta y nueve años <em>en la misma puerta.</em>
+                {t.historiaTitulo} <em>{t.historiaTituloEnfasis}</em>
               </>
             }
-            bajada="De una máquina de escribir a la guardia por WhatsApp. Deslizá para recorrer la historia del estudio."
+            bajada={t.historiaBajada}
           />
         </div>
         <div className="mt-16">

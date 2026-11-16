@@ -30,6 +30,7 @@ export default defineConfig({
             S.divider(),
             S.documentTypeListItem("abogado").title("Equipo"),
             S.documentTypeListItem("areaDePractica").title("Áreas de práctica"),
+            S.documentTypeListItem("hito").title("Historia (línea de tiempo)"),
             S.listItem()
               .title("Datos del estudio y cifras")
               .id("datosDelEstudio")

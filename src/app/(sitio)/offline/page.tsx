@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { datosDelEstudio } from "@/lib/content";
+import { getDatosDelEstudio } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Sin conexión",
@@ -8,7 +8,8 @@ export const metadata: Metadata = {
 };
 
 /** Se muestra cuando el celular no tiene conexión y la página pedida no está guardada. */
-export default function OfflinePage() {
+export default async function OfflinePage() {
+  const datosDelEstudio = await getDatosDelEstudio();
   return (
     <section className="mx-auto flex min-h-[70vh] max-w-[88rem] flex-col justify-center px-6 py-20">
       <p className="rotulo text-lacre">Sin conexión</p>

@@ -44,8 +44,8 @@ export function buildOrganizationJsonLd(datos: Datos, areas: AreaDePractica[]) {
     geo: { "@type": "GeoCoordinates", latitude: datos.geo.lat, longitude: datos.geo.lng },
     openingHoursSpecification: horarios,
     areaServed: [
-      { "@type": "City", name: "Ciudad Autónoma de Buenos Aires" },
-      { "@type": "State", name: "Provincia de Buenos Aires" },
+      { "@type": "City", name: datos.localidad },
+      { "@type": "State", name: datos.provincia },
     ],
     priceRange: "Consulta inicial sin costo",
     knowsAbout: areas.map((a) => a.nombre),

@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
-import { datosDelEstudio } from "@/lib/content";
+import { getDatosDelEstudio } from "@/lib/cms";
 
 /** Manifest de la app instalable (Agregar a pantalla de inicio en Android e iPhone). */
-export default function manifest(): MetadataRoute.Manifest {
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const datosDelEstudio = await getDatosDelEstudio();
   return {
     id: "/",
     name: `${datosDelEstudio.nombre} — Abogados`,
