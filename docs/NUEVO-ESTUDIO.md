@@ -1,6 +1,6 @@
 # Un estudio nuevo con esta plantilla (V3 demo + V4 repetible)
 
-Estado honesto al 05/11/2026: la **parte técnica** de levantar una copia se midió y es corta; la **parte de marca y contenido** todavía exige editar código, así que «un estudio nuevo en < 1 h» **no se cumple aún** (ver «Lo que falta»).
+Estado al 16/11/2026 (rama `feat/plantilla`): **la marca ya no está escrita en el código.** Nombre, nombre legal, monograma, año de fundación, ciudad, fundador, referencia de la dirección y los textos de la portada salen de un solo objeto, `datosDelEstudio` en `src/lib/content.ts`, y se pisan desde Sanity (*Datos del estudio y cifras → Marca del estudio / Textos de la portada*). La línea de tiempo «Historia» también se edita en el panel (nuevo tipo *Historia (línea de tiempo)*).
 
 ## Dos entornos, nunca mezclados (V3)
 
@@ -17,26 +17,38 @@ Regla: el entorno real nunca se usa para mostrar. La demo no tiene claves, así 
 
 ## Procedimiento para un estudio nuevo
 
-**Parte técnica — medida desde un clon limpio (05/11/2026): clonar 1 s + `npm ci` 42 s + `npm run build` 39 s + `npm test` (23 pruebas) 3 s = 85 s.**
-
-1. Copiar el repositorio (template de GitHub o `git clone` + repo nuevo).
-2. `npm ci && npm run build && npm test` (debe terminar en verde **sin variables**).
+1. Copiar el repositorio (template de GitHub o `git clone` + repo nuevo). `npm ci && npm run build && npm test`: debe terminar en verde **sin variables**.
+2. **Marca** — dos caminos, el mismo resultado:
+   - *Sin Sanity todavía:* editar el bloque `datosDelEstudio` de `src/lib/content.ts` (unas 16 líneas: nombre, monograma, año, ciudad, fundador, textos).
+   - *Con Sanity:* cargar los mismos campos en el panel; lo que quede vacío usa el texto de respaldo.
 3. Sanity: crear proyecto y dataset `production`; dataset privado `consultas` (`npx sanity dataset create consultas --visibility private`); invitar al estudio; agregar la URL del sitio en CORS con *credentials*.
 4. Vercel: importar el repo, rama `main`, cargar las variables de `docs/DEPLOY-VERCEL.md` §2 (Sanity, `ADMIN_*` con 2FA, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_MODO_DEMO=0`; Resend y WhatsApp al final).
 5. Dominio propio y cuentas **a nombre del estudio**; actualizar `NEXT_PUBLIC_SITE_URL` y redeployar.
-6. Cargar el contenido en el panel (guía: `docs/guia-del-panel.md`) y verificar con la lista de `docs/DEPLOY-VERCEL.md` §5.
+6. Cargar en el panel: equipo, áreas, historia, cifras, casos y notas (guía: `docs/guia-del-panel.md`) y verificar con la lista de `docs/DEPLOY-VERCEL.md` §5.
 
-## Lo que falta para que sean < 1 h (marca fija en el código)
+### Marcadores en los textos
 
-Hoy estos textos del estudio «Iturbe & Lavalle» están escritos en el código y **no** se cambian desde Sanity; hay que editarlos a mano para otro estudio:
+Los textos de marca aceptan `{nombre}` `{fundador}` `{ciudad}` `{fundacion}` y, con el año de fundación, `{anios}` / `{Anios}` (años en letras: «treinta y nueve», «Treinta y nueve»), más `{abogados}` y `{areas}` (cantidad de personas del equipo y de áreas, en letras). Ejemplo: «{Anios} años en {ciudad} explicando el derecho.» → «Veintiún años en Córdoba explicando el derecho.» Un marcador mal escrito queda a la vista tal cual.
 
-- `src/lib/content.ts`: datos, cifras, áreas, equipo, historia, notas y casos de respaldo (12 menciones de 1987 / Buenos Aires / Tribunales).
-- `src/app/(sitio)/page.tsx`: titular, la historia de «Ernesto Iturbe», años y cantidad de abogados.
-- `src/components/Sello.tsx` (texto y monograma «I&L»), `SiteHeader.tsx` («Desde 1987»), `SiteFooter.tsx` (nombre grande), `src/app/opengraph-image.tsx`, `src/app/layout.tsx` (descripción), `public/sw.js` (comentario).
+## Lo que se midió (16/11/2026)
+
+| Prueba | Resultado |
+|---|---|
+| Clon limpio → `npm ci` → build sin variables → 23 pruebas (05/11) | **85 s** |
+| Estudio actual, antes y después del cambio: 22 rutas (18 páginas, manifest, imagen OG, robots, sitemap), HTML normalizado | **idénticas** (la imagen OG pesa lo mismo, 58 643 bytes) — `node scripts/volcar-html.mjs <carpeta>` y `diff -r` |
+| Un estudio de otro nombre («Ferrer & Quiroga», Córdoba, 2005) sobre un clon: archivos editados / líneas | **1 archivo, 16 líneas**; el sitio compila y muestra nombre, monograma, ciudad, «Veintiún años», fundador y títulos nuevos en portada, equipo, contacto, áreas, pie y manifest |
+| Pruebas nuevas | `tests/plantilla.test.ts` (números en letras, marcadores, textos del estudio actual exactos, un estudio distinto sin rastros del anterior) y `tests/marca.test.ts` (falla si alguien vuelve a escribir «Iturbe», «Lavalle», «1987» o «Talcahuano» en un componente) |
+
+## Lo que sigue siendo del estudio de ejemplo (contenido, no código de marca)
+
+Es contenido que se reemplaza en Sanity (o en `content.ts` si no hay panel); no bloquea el sitio, pero hay que cargarlo:
+
+- Equipo (nombres, matrículas, fotos), áreas de práctica, casos, notas, preguntas frecuentes, cifras e **hitos de la historia**.
+- Las 4 fotos de archivo de la portada (`/img/…`) y sus pies/alt en `src/app/(sitio)/page.tsx` («Fig. 1 — Palacio del Congreso, Buenos Aires», «Avenida de Buenos Aires con el Obelisco…»): al cambiar la foto, cambiar el texto.
 - Colores y tipografías: `src/app/globals.css` (ver `docs/sistema-de-diseno.md`).
+- Textos genéricos de Argentina: Colegio Público de la Abogacía, Ley 27.802 de la calculadora, Ley 25.326 de privacidad. Si el estudio es de otro país, revisar `calculadora-indemnizacion` y `legales`.
 
-Cambio propuesto (no hecho, toca la producción): que el nombre, el año de fundación, la ciudad y el monograma salgan de `datosDelEstudio` y que la historia sea un documento de Sanity. Con eso, la parte de marca baja a cargar datos en el panel.
+## Lo que no se pudo probar
 
-## Lo que no se pudo probar sin cuentas
-
-Crear el proyecto de Sanity y el de Vercel de cero, con el tiempo real de la parte manual (cuentas, DNS, claves).
+- La lectura desde un Sanity real de los campos nuevos y del tipo `hito` (no hay proyecto ni claves): la consulta GROQ ignora los campos vacíos y vuelve al texto de respaldo, pero no se corrió contra un dataset.
+- Crear el proyecto de Sanity y el de Vercel de cero, con el tiempo real de la parte manual (cuentas, DNS, claves). Por eso «< 1 h» está demostrado para la parte de código y de marca, **no** para las cuentas de terceros.

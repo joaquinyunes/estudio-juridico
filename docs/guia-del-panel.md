@@ -1,5 +1,21 @@
 # Guía del panel de administración (para el estudio)
 
+## Tu sitio de un vistazo
+
+Tu sitio tiene 18 páginas: la portada, una página por área de práctica, el equipo, los casos resueltos, las notas, las preguntas frecuentes, la calculadora de indemnización, el contacto y los textos legales. Se ve igual de bien en el celular, donde llega la mayoría de las consultas.
+
+![Portada en escritorio](capturas/inicio-escritorio.jpg)
+
+![Portada en celular](capturas/inicio-celular.jpg)
+
+![Formulario de contacto en celular](capturas/contacto-celular.jpg)
+
+![Área de práctica en escritorio](capturas/area-laboral-escritorio.jpg)
+
+![Calculadora de indemnización en celular](capturas/calculadora-celular.jpg)
+
+## Cómo entrar al panel
+
 El panel está en **`tu-sitio.com/studio`**. Tiene **dos llaves**:
 
 1. **Usuario y contraseña del panel** (`ADMIN_USER` / `ADMIN_PASSWORD`, de al menos 12 caracteres): aparece una ventana del navegador antes de cargar nada. Quien no las tiene ve solo "Acceso restringido". Tras 8 intentos fallidos se bloquea 15 minutos. Si el sitio tiene **2FA** activado, en el campo de contraseña se escribe la contraseña **seguida de los 6 dígitos** de la app autenticadora, sin espacio (ej.: `mi-clave-larga123456`).
@@ -45,4 +61,4 @@ El repositorio avisa por correo si la portada falla 3 veces seguidas (`.github/w
 
 ## Capturas
 
-Del sitio publicado, en `docs/capturas/` (escritorio y celular). Las capturas del panel de Sanity se agregan cuando el proyecto de Sanity tenga las claves reales.
+Las del sitio están en `docs/capturas/` (se regeneran con `scripts/capturas.mjs`). Las del panel de Sanity se agregan cuando el proyecto tenga las claves reales.

@@ -14,6 +14,7 @@ Un estudio jurídico necesita que el cliente confíe en 10 segundos, que la cons
 - Formulario calificador que abre WhatsApp con el caso ya escrito y, con las claves de Resend cargadas, envía copia por correo.
 - Panel `/studio` para que el estudio edite avisos, notas, casos, equipo, horarios y cifras (con 2FA).
 - Instalable como app (PWA) y con página sin conexión.
+- **Plantilla repetible:** el nombre, el monograma, el año, la ciudad y los textos de la portada se cargan en un solo lugar (o desde el panel), así que armar el sitio de otro estudio es cambiar datos, no código (`docs/NUEVO-ESTUDIO.md`).
 - Política de privacidad (Ley 25.326), consentimiento registrado y secreto profesional respetado.
 
 ## Métricas reales (no estimadas)
@@ -24,11 +25,19 @@ Un estudio jurídico necesita que el cliente confíe en 10 segundos, que la cons
 | Lighthouse móvil, contacto | **100 / 100 / 100 / 100** | ídem |
 | Carga (inicio, móvil) | LCP **1,4 s** · FCP 1,4 s · CLS **0** · TBT 150 ms · 555 KiB | ídem |
 | Accesibilidad WCAG 2.1 A/AA | **0 violaciones** en 18 páginas, a 1280 px y a 375 px | axe-core, `npm run test:a11y` |
-| Pruebas automáticas | **23** (candado del panel, 2FA, todas las rutas, formulario) | `npm test`, corre en el CI |
+| Pruebas automáticas | **28** (candado del panel, 2FA, todas las rutas, formulario, plantilla de marca) | `npm test`, corre en el CI |
 | Dependencias | **0 críticas, 0 altas** en producción | `npm audit --omit=dev` |
 | Seguridad web | CSP aplicada, HSTS, `security.txt`, 2FA del panel | `docs/SEGURIDAD.md` |
 
-Capturas (`docs/capturas/`, generadas con `scripts/capturas.mjs`): `inicio-escritorio.jpg`, `inicio-celular.jpg`, `contacto-*.jpg`, `area-laboral-*.jpg`, `calculadora-*.jpg`.
+Capturas del sitio (`docs/capturas/`, generadas con `scripts/capturas.mjs`):
+
+![Portada en escritorio](capturas/inicio-escritorio.jpg)
+
+![Portada en celular](capturas/inicio-celular.jpg)
+
+![Contacto en celular](capturas/contacto-celular.jpg)
+
+También hay `area-laboral-*` y `calculadora-*` (escritorio y celular).
 
 ## Lo comercial (👤 completar)
 
