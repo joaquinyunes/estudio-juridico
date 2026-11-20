@@ -31,6 +31,7 @@ Se cargan en Vercel → Project → Settings → Environment Variables (entorno 
 | `SANITY_LEADS_DATASET` | Dataset **privado** para consultas (`consultas`) | Las consultas llegan solo por email |
 | `ADMIN_USER` | Usuario de la primera barrera de `/studio` | Usa `admin` |
 | `ADMIN_PASSWORD` | Contraseña de `/studio`, **mínimo 12 caracteres** | **`/studio` responde 404 en producción** (falla cerrado), también si tiene menos de 12 |
+| `LEADS_MAX_POR_HORA` | Tope global de consultas por hora y por instancia | 100 |
 | `ADMIN_TOTP_SECRET` | 2FA de `/studio` (generar con `node scripts/generar-totp.mjs`; ver `docs/SEGURIDAD.md`) | Solo usuario y contraseña |
 | `NEXT_PUBLIC_MODO_DEMO` | `0` en el sitio real del estudio: oculta el aviso «estudio ficticio» | Aviso visible (demo) |
 | `RESEND_API_KEY` | Envío de email del formulario | No se envía email |
