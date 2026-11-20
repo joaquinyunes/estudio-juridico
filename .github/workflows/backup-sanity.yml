@@ -38,7 +38,9 @@ jobs:
         run: |
           fecha=$(date +%F)
           npx --yes sanity@6 dataset export production "backup-contenido-$fecha.tar.gz" --project "$SANITY_STUDIO_PROJECT_ID" --no-assets
-          if [ -n "$LEADS_DATASET" ]; then
+          # El repositorio puede ser público: las consultas (datos personales) solo se exportan
+          # si es privado, porque los artefactos los puede bajar cualquiera que vea el repo.
+          if [ -n "$LEADS_DATASET" ] && [ "${{ github.event.repository.private }}" = "true" ]; then
             npx --yes sanity@6 dataset export "$LEADS_DATASET" "backup-consultas-$fecha.tar.gz" --project "$SANITY_STUDIO_PROJECT_ID" --no-assets
           fi
       - uses: actions/upload-artifact@v4

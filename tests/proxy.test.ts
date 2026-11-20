@@ -60,3 +60,15 @@ test("tras 8 fallos desde la misma IP responde 429, incluso con la clave correct
   assert.equal(r.status, 429);
   assert.equal(r.headers.get("retry-after"), "900");
 });
+
+test("rotar el x-forwarded-for de la izquierda no evita el bloqueo: la IP que cuenta es la última", async () => {
+  delete process.env.VERCEL;
+  for (let i = 0; i < 8; i++) assert.equal((await pedir("admin:mala", `1.2.3.${i}, 198.51.100.5`)).status, 401);
+  assert.equal((await pedir(`admin:${CLAVE}`, "7.7.7.7, 198.51.100.5")).status, 429);
+});
+
+test("fuerza bruta repartida entre muchas IPs: el tope global bloquea incluso con la clave correcta", async () => {
+  for (let i = 0; i < 45; i++) await pedir("admin:mala", `203.0.113.${100 + i}`);
+  const r = await pedir(`admin:${CLAVE}`, "203.0.113.250");
+  assert.equal(r.status, 429);
+});

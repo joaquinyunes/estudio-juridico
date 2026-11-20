@@ -1,6 +1,7 @@
 import "server-only";
 import { sanityClient } from "./sanity";
 import * as local from "./content";
+import { enlaceSeguro } from "./seguridad";
 import type {
   Abogado,
   AreaDePractica,
@@ -179,7 +180,8 @@ export async function getAviso(): Promise<Aviso | null> {
     return {
       etiqueta: a.etiqueta || "Novedad",
       texto: a.texto,
-      enlace: a.enlace || undefined,
+      // El estudio edita este enlace: solo se aceptan rutas del sitio o http(s) (nada de javascript:).
+      enlace: enlaceSeguro(a.enlace),
       enlaceTexto: a.enlaceTexto || "Ver más",
     };
   } catch (err) {

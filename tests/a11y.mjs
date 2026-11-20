@@ -20,6 +20,7 @@ const servidor = spawn(process.execPath, ["node_modules/next/dist/bin/next", "st
 });
 
 let fallos = 0;
+const violacionesCsp = [];
 try {
   for (let i = 0; i < 60; i++) {
     try {
@@ -38,7 +39,13 @@ try {
     // reducedMotion: las animaciones por scroll (p. ej. el sello «Resuelto») se miden en su
     // estado final; a medio animar axe ve opacidad parcial y da falsos contrastes.
     const pagina = await navegador.newPage({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
+    let rutaActual = "";
+    // La CSP está en modo bloqueo: cualquier recurso legítimo que se bloquee aparece en la consola.
+    pagina.on("console", (m) => {
+      if (/Content Security Policy/i.test(m.text())) violacionesCsp.push(`${rutaActual} (${ancho}px): ${m.text().slice(0, 160)}`);
+    });
     for (const ruta of rutas) {
+      rutaActual = ruta;
       await pagina.goto(base + ruta, { waitUntil: "networkidle" });
       await pagina.addScriptTag({ content: axeFuente });
       const { violations } = await pagina.evaluate(() =>
@@ -57,6 +64,12 @@ try {
   await navegador.close();
 } finally {
   servidor.kill();
+}
+if (violacionesCsp.length) {
+  fallos += violacionesCsp.length;
+  console.error("Violaciones de CSP:"+"\n"+violacionesCsp.join("\n"));
+} else {
+  console.log("✔ CSP: ninguna violación en consola en todas las páginas");
 }
 if (fallos) {
   console.error(`\n${fallos} violación(es) de accesibilidad`);

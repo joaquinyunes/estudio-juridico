@@ -52,6 +52,18 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
       {
+        // El panel no lleva la CSP completa (Sanity necesita sus propios orígenes), pero sí
+        // lo que no depende de ellos: que nadie lo embeba en otro sitio (clickjacking) y no sniffing.
+        source: "/studio/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+        ],
+      },
+      {
         source: "/sw.js",
         headers: [
           { key: "Content-Type", value: "application/javascript; charset=utf-8" },

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verificarTotp } from "./lib/totp.ts";
+import { crearContador, ipDelCliente } from "./lib/seguridad.ts";
 
 /**
  * Candado del panel de administración (/studio).
@@ -22,7 +23,12 @@ const LARGO_MINIMO_CLAVE = 12;
 const REALM = 'Basic realm="Panel del estudio", charset="UTF-8"';
 const VENTANA_MS = 15 * 60 * 1000;
 const MAX_FALLOS = 8;
-const fallos = new Map<string, number[]>();
+// Tope global: la fuerza bruta repartida entre muchas IPs también se corta (con clave
+// y 2FA no hay forma de adivinar en 15 min, así que el costo es solo esperar).
+const MAX_FALLOS_GLOBAL = 40;
+const fallos = crearContador(VENTANA_MS);
+const fallosGlobal = crearContador(VENTANA_MS, 1);
+const CLAVE_GLOBAL = "todos";
 
 /** Comparación en tiempo constante (evita filtrar la contraseña por tiempos). */
 function iguales(a: string, b: string): boolean {
@@ -53,6 +59,10 @@ function respuesta(status: number, cuerpo: string, extra: Record<string, string>
     headers: {
       "Cache-Control": "no-store",
       "X-Robots-Tag": "noindex, nofollow",
+      // Las respuestas que arma el candado no pasan por los encabezados de next.config.
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'",
+      "X-Content-Type-Options": "nosniff",
       ...extra,
     },
   });
@@ -73,10 +83,9 @@ export async function proxy(request: NextRequest) {
     return respuesta(404, "No encontrado");
   }
 
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anon";
+  const ip = ipDelCliente(request.headers);
   const ahora = Date.now();
-  const recientes = (fallos.get(ip) ?? []).filter((t) => ahora - t < VENTANA_MS);
-  if (recientes.length >= MAX_FALLOS) {
+  if (fallos.cuenta(ip, ahora) >= MAX_FALLOS || fallosGlobal.cuenta(CLAVE_GLOBAL, ahora) >= MAX_FALLOS_GLOBAL) {
     return respuesta(429, "Demasiados intentos. Probá de nuevo en unos minutos.", {
       "Retry-After": "900",
     });
@@ -94,13 +103,13 @@ export async function proxy(request: NextRequest) {
     : true;
 
   if (enviadas && usuarioOk && claveOk && totpOk) {
-    fallos.delete(ip);
+    fallos.borrar(ip);
     return NextResponse.next({ headers: { "Cache-Control": "no-store" } });
   }
 
   if (enviadas) {
-    recientes.push(ahora);
-    fallos.set(ip, recientes);
+    fallos.registrar(ip, ahora);
+    fallosGlobal.registrar(CLAVE_GLOBAL, ahora);
   }
   return respuesta(401, "Acceso restringido", { "WWW-Authenticate": REALM });
 }

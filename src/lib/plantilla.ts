@@ -56,7 +56,9 @@ export function rellenar(
     Areas: capitalizar(areas),
   };
   // Un marcador desconocido se deja tal cual (se nota en pantalla y en las pruebas).
-  return texto.replace(/\{(\w+)\}/g, (m, clave: string) => valores[clave] ?? m);
+  return texto.replace(/\{(\w+)\}/g, (m, clave: string) =>
+    Object.hasOwn(valores, clave) ? valores[clave] : m,
+  );
 }
 
 export const CLAVES_DE_TEXTO = [

@@ -2,36 +2,34 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { Resend } from "resend";
 import { createClient } from "@sanity/client";
-import { getDatosDelEstudio } from "@/lib/cms";
+import { getAreas, getDatosDelEstudio } from "@/lib/cms";
+import { crearContador, ipDelCliente, mismoOrigen, tieneControl } from "@/lib/seguridad";
+
+const sinControl = (s: string) => !tieneControl(s);
 
 const leadSchema = z.object({
-  nombre: z.string().trim().min(2).max(120),
+  // Sin saltos de línea ni caracteres de control: el nombre va en el asunto del correo.
+  nombre: z.string().trim().min(2).max(120).refine(sinControl, "caracteres no permitidos"),
   area: z.string().min(1).max(60),
-  areaNombre: z.string().max(120).optional(),
   urgencia: z.enum(["inmediata", "mes", "informacion"]).optional(),
-  resumen: z.string().trim().min(20).max(1500),
+  // El resumen puede tener saltos de línea y tabulaciones, nada más de control.
+  resumen: z
+    .string()
+    .trim()
+    .min(20)
+    .max(1500)
+    .refine((s) => sinControl(s.replace(/[\n\r\t]/g, "")), "caracteres no permitidos"),
   // Consentimiento (Ley 25.326): se exige también acá, no solo en el navegador.
   acepta: z.literal(true),
   empresa: z.string().optional(), // honeypot
 });
 
-// Límite simple por IP (por instancia). Suficiente para frenar abuso básico;
-// para tráfico alto conviene mover esto a Vercel KV / Upstash.
-const VENTANA_MS = 10 * 60 * 1000;
-const MAX_POR_VENTANA = 5;
-const intentos = new Map<string, number[]>();
-
-function limitado(ip: string): boolean {
-  const ahora = Date.now();
-  const recientes = (intentos.get(ip) ?? []).filter((t) => ahora - t < VENTANA_MS);
-  recientes.push(ahora);
-  intentos.set(ip, recientes);
-  // Evita que el mapa crezca sin límite con IPs que no vuelven.
-  if (intentos.size > 5000) {
-    for (const [k, v] of intentos) if (ahora - v[v.length - 1] >= VENTANA_MS) intentos.delete(k);
-  }
-  return recientes.length > MAX_POR_VENTANA;
-}
+// Topes en memoria de cada instancia (ver shortcut en lib/seguridad.ts): por IP y,
+// como respaldo ante muchas IPs, global por hora (protege la cuota de Resend y la bandeja del estudio).
+const MAX_POR_IP = 5;
+const porIp = crearContador(10 * 60 * 1000);
+const MAX_GLOBAL = Number(process.env.LEADS_MAX_POR_HORA) || 100;
+const global = crearContador(60 * 60 * 1000, 1);
 
 const MAX_BODY_BYTES = 8 * 1024;
 
@@ -39,15 +37,22 @@ const escapar = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 export async function POST(request: Request) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anon";
-  if (limitado(ip)) {
+  // Un POST desde otro sitio ni siquiera consume el tope de la IP.
+  if (!mismoOrigen(request.headers)) {
+    return NextResponse.json({ error: "Origen no permitido" }, { status: 403 });
+  }
+  if (porIp.registrar(ipDelCliente(request.headers)) > MAX_POR_IP || global.registrar("todos") > MAX_GLOBAL) {
     return NextResponse.json({ error: "Demasiados envíos, probá en unos minutos" }, { status: 429 });
   }
 
   if (!request.headers.get("content-type")?.includes("application/json")) {
     return NextResponse.json({ error: "Formato no soportado" }, { status: 415 });
   }
-  // El tope se aplica al texto leído (no solo a Content-Length, que puede mentir).
+  // Se corta antes de leer si el cliente declara un cuerpo grande; y se vuelve a medir el
+  // texto leído, porque Content-Length puede faltar o mentir.
+  if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: "Mensaje demasiado largo" }, { status: 413 });
+  }
   const texto = await request.text();
   if (new TextEncoder().encode(texto).length > MAX_BODY_BYTES) {
     return NextResponse.json({ error: "Mensaje demasiado largo" }, { status: 413 });
@@ -64,25 +69,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
   }
 
-  const { nombre, area, areaNombre, urgencia, resumen, empresa } = parsed.data;
+  const { nombre, area, urgencia, resumen, empresa } = parsed.data;
 
   // Bot: respondemos OK para no darle pistas, pero no registramos nada.
   if (empresa) return NextResponse.json({ ok: true });
 
+  // El área tiene que existir y su nombre lo pone el servidor: lo que mande el navegador no vale.
+  const areaEncontrada = (await getAreas()).find((a) => a.slug === area);
+  if (!areaEncontrada) {
+    return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
+  }
+  const areaNombre = areaEncontrada.nombre;
+
   const resultados = await Promise.allSettled([
     guardarEnSanity({ nombre, area, areaNombre, urgencia, resumen }),
-    enviarEmail({ nombre, areaNombre: areaNombre ?? area, urgencia, resumen }),
+    enviarEmail({ nombre, areaNombre, urgencia, resumen }),
   ]);
 
+  // Solo el mensaje del error: nunca el objeto completo, para no copiar datos personales a los logs.
   resultados.forEach((r) => {
-    if (r.status === "rejected") console.error("Error registrando lead", r.reason);
+    if (r.status === "rejected") console.error("Error registrando lead:", r.reason instanceof Error ? r.reason.message : "desconocido");
   });
+  if (resultados.every((r) => r.status === "rejected" || r.value === false)) {
+    console.error("Consulta recibida pero sin entregar: ni guardada ni enviada por correo (revisar variables)");
+  }
 
-  return NextResponse.json({
-    ok: true,
-    guardado: resultados[0].status === "fulfilled" && resultados[0].value,
-    emailEnviado: resultados[1].status === "fulfilled" && resultados[1].value,
-  });
+  // La respuesta no revela qué está configurado (Resend, Sanity): solo que se recibió.
+  return NextResponse.json({ ok: true });
 }
 
 async function guardarEnSanity(lead: {

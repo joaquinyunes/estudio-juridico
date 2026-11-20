@@ -19,22 +19,31 @@ async function puertoLibre(): Promise<number> {
   });
 }
 
-before(async () => {
-  assert.ok(existsSync(".next/BUILD_ID"), "Falta el build: corré `npm run build` antes de `npm test`");
+async function iniciar(extra: Record<string, string> = {}) {
   const puerto = await puertoLibre();
-  base = `http://127.0.0.1:${puerto}`;
+  const url = `http://127.0.0.1:${puerto}`;
   // Sin ADMIN_PASSWORD ni claves: el sitio debe funcionar con el contenido de respaldo.
-  const env: NodeJS.ProcessEnv = { ...process.env, NODE_ENV: "production" };
-  for (const k of ["ADMIN_PASSWORD", "ADMIN_TOTP_SECRET", "RESEND_API_KEY", "SANITY_API_TOKEN", "SANITY_LEADS_DATASET"]) delete env[k];
-  servidor = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(puerto)], { env, stdio: "ignore" });
+  const env: NodeJS.ProcessEnv = { ...process.env, NODE_ENV: "production", LEADS_MAX_POR_HORA: "45", ...extra };
+  delete env.VERCEL;
+  if (!("ADMIN_PASSWORD" in extra)) delete env.ADMIN_PASSWORD;
+  for (const k of ["ADMIN_TOTP_SECRET", "RESEND_API_KEY", "SANITY_API_TOKEN", "SANITY_LEADS_DATASET"]) delete env[k];
+  const proceso = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(puerto)], { env, stdio: "ignore" });
   for (let i = 0; i < 60; i++) {
     try {
-      if ((await fetch(base + "/robots.txt")).ok) break;
+      if ((await fetch(url + "/robots.txt")).ok) break;
     } catch {
       // el servidor todavía está arrancando
     }
     await new Promise((r) => setTimeout(r, 500));
   }
+  return { url, proceso };
+}
+
+before(async () => {
+  assert.ok(existsSync(".next/BUILD_ID"), "Falta el build: corré `npm run build` antes de `npm test`");
+  const i = await iniciar();
+  base = i.url;
+  servidor = i.proceso;
   const mapa = await (await fetch(base + "/sitemap.xml")).text();
   for (const [, loc] of mapa.matchAll(/<loc>([^<]+)<\/loc>/g)) rutas.push(new URL(loc).pathname);
   rutas.push("/offline");
@@ -96,10 +105,10 @@ const valido = {
   acepta: true,
 };
 
-test("formulario: una consulta válida se acepta", async () => {
+test("formulario: una consulta válida se acepta y la respuesta no cuenta qué está configurado", async () => {
   const r = await lead(valido);
   assert.equal(r.status, 200);
-  assert.equal((await r.json()).ok, true);
+  assert.deepEqual(await r.json(), { ok: true });
 });
 
 test("formulario: datos inválidos dan 400", async () => {
@@ -134,4 +143,58 @@ test("formulario: más de 5 envíos por IP en la ventana dan 429", async () => {
 
 test("el formulario no acepta GET (solo POST)", async () => {
   assert.equal((await fetch(base + "/api/lead")).status, 405);
+});
+
+test("formulario: escribir otro x-forwarded-for a la izquierda no evita el tope por IP", async () => {
+  const estados: number[] = [];
+  for (let i = 0; i < 7; i++) estados.push((await lead(valido, { "x-forwarded-for": `${10 + i}.0.0.1, 192.0.2.88` })).status);
+  assert.deepEqual(estados.slice(0, 5), [200, 200, 200, 200, 200]);
+  assert.equal(estados[6], 429);
+});
+
+test("formulario: un POST desde otro sitio (Origin ajeno) se rechaza; el del propio sitio pasa", async () => {
+  assert.equal((await lead(valido, { origin: "https://sitio-malo.example" })).status, 403);
+  assert.equal((await lead(valido, { origin: "null" })).status, 403);
+  assert.equal((await lead(valido, { "sec-fetch-site": "cross-site" })).status, 403);
+  assert.equal((await lead(valido, { origin: base })).status, 200);
+});
+
+test("formulario: un área que no existe se rechaza; el nombre del área lo pone el servidor", async () => {
+  assert.equal((await lead({ ...valido, area: "inventada" })).status, 400);
+  assert.equal((await lead({ ...valido, area: "laboral", areaNombre: "<b>URGENTE</b> clic aquí" })).status, 200);
+});
+
+test("formulario: saltos de línea o caracteres de control en el nombre se rechazan (inyección en el asunto del correo)", async () => {
+  assert.equal((await lead({ ...valido, nombre: "Ana\r\nBcc: robo@malo.example" })).status, 400);
+  assert.equal((await lead({ ...valido, nombre: "Ana\u0000Pérez" })).status, 400);
+});
+
+test("formulario: tope global por hora aunque cada envío venga de una IP distinta", async () => {
+  const estados: number[] = [];
+  for (let i = 0; i < 60; i++) estados.push((await lead(valido, { "x-forwarded-for": `100.64.${i}.1` })).status);
+  assert.ok(estados.includes(429), "debió llegar al tope global");
+  assert.equal(estados[estados.length - 1], 429);
+});
+
+test("/studio: incluso cerrado (404) lleva encabezados contra clickjacking y sniffing", async () => {
+  const r = await fetch(base + "/studio");
+  assert.equal(r.status, 404);
+  assert.equal(r.headers.get("x-frame-options"), "SAMEORIGIN");
+  assert.match(r.headers.get("content-security-policy") ?? "", /frame-ancestors 'self'/);
+  assert.equal(r.headers.get("x-content-type-options"), "nosniff");
+});
+
+test("/studio abierto (con clave): sin caché y con protección contra clickjacking", async () => {
+  const { url, proceso } = await iniciar({ ADMIN_PASSWORD: "clave-de-prueba-larga-1" });
+  try {
+    const auth = "Basic " + Buffer.from("admin:clave-de-prueba-larga-1").toString("base64");
+    const r = await fetch(url + "/studio", { headers: { authorization: auth } });
+    assert.equal(r.status, 200);
+    assert.equal(r.headers.get("x-frame-options"), "SAMEORIGIN");
+    assert.match(r.headers.get("content-security-policy") ?? "", /frame-ancestors 'self'/);
+    assert.match(r.headers.get("cache-control") ?? "", /no-store/);
+    assert.equal((await fetch(url + "/studio")).status, 401);
+  } finally {
+    proceso.kill();
+  }
 });
