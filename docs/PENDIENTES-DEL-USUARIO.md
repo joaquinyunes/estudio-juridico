@@ -4,6 +4,8 @@ Todo lo que se podía hacer sin cuentas externas ni textos legales ya está hech
 
 ## 1. Antes o justo después de que se despliegue `main` (5 min)
 
+- [ ] **GitHub Actions está bloqueado: «la cuenta está bloqueada por un problema de facturación»** (github.com → Settings → Billing and plans). Mientras siga así **no corre nada de GitHub**: el CI (build, pruebas, axe, auditoría, escaneo de secretos), el chequeo de disponibilidad cada 15 min (`uptime.yml`, que hoy falla sin ejecutarse), el backup semanal de Sanity y los PRs de Dependabot. Las pruebas se corrieron en local (45 pruebas, axe, build, `npm audit`), pero **no hay vigilancia automática hasta que lo resuelvas**.
+
 - [ ] **`ADMIN_PASSWORD` en Vercel con 12 caracteres o más.** Si es más corta, `/studio` responde 404 (falla cerrado) desde este despliegue. Cambiarla y redeployar.
 - [ ] **Abrir el sitio con la consola del navegador** (F12) en inicio, contacto y un área: no debe haber mensajes «Content Security Policy». La CSP ahora **bloquea**; si algo legítimo se bloquea (GA4, un mapa), pasame el mensaje o agregá el dominio en `next.config.ts`.
 - [ ] Probar `https://tu-sitio/studio`: debe pedir usuario y clave (401 sin ellas).
