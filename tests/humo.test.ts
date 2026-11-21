@@ -198,3 +198,9 @@ test("/studio abierto (con clave): sin caché y con protección contra clickjack
     proceso.kill();
   }
 });
+
+test("modo demo (sin NEXT_PUBLIC_MODO_DEMO): el aviso «estudio ficticio» está en el inicio y en el aviso legal", async () => {
+  for (const ruta of ["/", "/legales/aviso-legal"]) {
+    assert.match(await (await fetch(base + ruta)).text(), /ficticio/i, ruta);
+  }
+});

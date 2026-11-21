@@ -15,6 +15,13 @@ Estado al 16/11/2026 (rama `feat/plantilla`): **la marca ya no está escrita en 
 Regla: el entorno real nunca se usa para mostrar. La demo no tiene claves, así que **no puede** recibir datos reales de nadie por error.
 👤 Falta crear el proyecto de Vercel de la demo (hoy `estudio-juridico-tau` es la demo con contenido ficticio).
 
+### Levantar la demo (V3) — probado en local
+
+1. Proyecto nuevo en Vercel desde este repo, rama `main`, **sin ninguna variable de entorno** (ni Sanity, ni `ADMIN_*`, ni Resend, ni `NEXT_PUBLIC_MODO_DEMO`).
+2. Resultado esperado, y es lo que comprueban `npm test` (`humo.test.ts`) y `npm run build` sin variables: las 18 páginas con el contenido de ejemplo de «Iturbe & Lavalle», el aviso «estudio ficticio» en el pie y en el aviso legal, `/studio` en 404 y el formulario que responde bien pero no guarda ni envía nada.
+3. Para mostrar otro nombre sin tocar Sanity: cambiar el bloque `datosDelEstudio` de `src/lib/content.ts` en una rama `demo` (16 líneas, medido) y desplegar esa rama.
+4. 👤 Crear el proyecto de Vercel (cuenta tuya). No hay nada más que configurar.
+
 ## Procedimiento para un estudio nuevo
 
 1. Copiar el repositorio (template de GitHub o `git clone` + repo nuevo). `npm ci && npm run build && npm test`: debe terminar en verde **sin variables**.
